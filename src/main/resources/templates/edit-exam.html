@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Edit Exam</title>
+  <th:block th:include="header :: header"></th:block>
+
+</head>
+<body>
+<h1>Edit Exam</h1>
+<form th:action="@{/exams/edit}" th:object="${exam}" method="post">
+  <input type="hidden" th:field="*{id}"/>
+
+
+
+  <br/>
+
+  <table border="1">
+    <thead>
+    <tr>
+      <th>Date Last Exam</th>
+      <th>Sph</th>
+      <th>Cyl</th>
+      <th>Axis</th>
+      <th>Add</th>
+      <th>CL</th>
+      <th>V/A</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td><input type="date" th:field="*{dateLastExam}"/></td>
+    <tr>
+      <td>OD</td>
+      <td><input type="text" th:field="*{odSph}"/></td>
+      <td><input type="text" th:field="*{odCyl}"/></td>
+      <td><input type="text" th:field="*{odAxis}"/></td>
+      <td><input type="text" th:field="*{odAdd}"/></td>
+      <td><input type="text" th:field="*{odCl}"/></td>
+      <td><input type="text" th:field="*{odVa}"/></td>
+
+    </tr>
+    <tr>
+      <td>OS</td>
+      <td><input type="text" th:field="*{osSph}"/></td>
+      <td><input type="text" th:field="*{osCyl}"/></td>
+      <td><input type="text" th:field="*{osAxis}"/></td>
+      <td><input type="text" th:field="*{osAdd}"/></td>
+      <td><input type="text" th:field="*{osCl}"/></td>
+      <td><input type="text" th:field="*{osVa}"/></td>
+    </tr>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <thead>
+    <tr>
+      <th>IPD</th>
+    </tr>
+    <tr>
+      <th>K.Reading R</th>
+      <th>K.Reading L</th>
+    </tr>
+    <tr>
+      <th>Frame</th>
+      <th>Accessories</th>
+      <th>Lens</th>
+      <th>Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td><input type="text" th:field="*{frame}"/></td>
+      <td><input type="text" th:field="*{accessories}"/></td>
+      <td><input type="text" th:field="*{lens}"/></td>
+      <td><input type="text" th:field="*{price}"/></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <button type="submit">Save Changes</button>
+</form>
+
+<div>
+  <a href="/clients/view?id=" th:href="@{/clients/view(id=${exam.client.id})}">Back to Client Details</a>
+</div>
+</body>
+</html>

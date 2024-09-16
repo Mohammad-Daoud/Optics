@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Header</title>
+  <style>
+    .search-form {
+      display: inline-block;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <form th:action="@{/clients/search}" method="get" class="search-form">
+    <input type="text" name="query" placeholder="Search by name, phone, or ID" />
+    <button type="submit">Search</button>
+  </form>
+</header>
+</body>
+</html>

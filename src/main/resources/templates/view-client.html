@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>View Client</title>
+  <th:block th:include="header :: header"></th:block>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+<h1>Client Details</h1>
+
+<div>
+
+  <p><strong>ID:</strong> <span th:text="${client.id}"></span></p>
+  <p><strong>First Name:</strong> <span th:text="${client.firstName}"></span></p>
+  <p><strong>Second Name:</strong> <span th:text="${client.secondName}"></span></p>
+  <p><strong>Third Name:</strong> <span th:text="${client.thirdName}"></span></p>
+  <p><strong>Last Name:</strong> <span th:text="${client.lastName}"></span></p>
+  <p><strong>Address:</strong> <span th:text="${client.address}"></span></p>
+  <p><strong>Phone Number:</strong> <span th:text="${client.phoneNumber}"></span></p>
+  <p><strong>P.O. Box:</strong> <span th:text="${client.poBox}"></span></p>
+  <p><strong>Date of Creation:</strong> <span th:text="${client.dateOfCreation}"></span></p>
+  <p><strong>Age:</strong> <span th:text="${client.age}"></span></p>
+  <p><strong>Occupation:</strong> <span th:text="${client.occupation}"></span></p>
+
+</div>
+<div th:if="${client.imageUrl != null}">
+  <p><strong>Image:</strong></p>
+  <img th:src="@{'/images/' + ${client.imageUrl}}" alt="Client Image" />
+</div>
+<h2>Exams</h2>
+<a th:href="@{/exams/add(id=${client.id})}">Add new exam</a>
+
+<div th:if="${client.exams != null}">
+  <table>
+    <thead>
+    <tr>
+      <th> No. </th>
+      <th>Date Last Exam</th>
+      <th>Eye</th>
+      <th>Sph</th>
+      <th>Cyl</th>
+      <th>Axis</th>
+      <th>Add</th>
+      <th>CL</th>
+      <th>V/A</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="exam, iterStat : ${client.exams}">
+      <td th:text="${iterStat.index}" rowspan="2"></td>
+      <td th:text="${exam.dateLastExam}" rowspan="2"></td>
+      <td>OD</td>
+      <td th:text="${exam.odSph}"></td>
+      <td th:text="${exam.odCyl}"></td>
+      <td th:text="${exam.odAxis}"></td>
+      <td th:text="${exam.odAdd}"></td>
+      <td th:text="${exam.odCl}"></td>
+      <td th:text="${exam.odVa}"></td>
+      <td rowspan="2">
+        <a th:href="@{/exams/edit(id=${exam.id})}">Edit</a>
+      </td>
+    </tr>
+    <tr th:each="exam : ${client.exams}">
+      <td>OS</td>
+      <td th:text="${exam.osSph}"></td>
+      <td th:text="${exam.osCyl}"></td>
+      <td th:text="${exam.osAxis}"></td>
+      <td th:text="${exam.osAdd}"></td>
+      <td th:text="${exam.osCl}"></td>
+      <td th:text="${exam.osVa}"></td>
+
+    </tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead>
+    <tr>
+      <th>IPD</th>
+      <th>K.Reading R</th>
+      <th>K.Reading L</th>
+      <th>Frame</th>
+      <th>Accessories</th>
+      <th>Lens</th>
+      <th>Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="exam, iterStat : ${client.exams}">
+      <td th:text="${exam.ipd}"></td>
+      <td th:text="${exam.kReadingR}"></td>
+      <td th:text="${exam.kReadingL}"></td>
+      <td th:text="${exam.frame}"></td>
+      <td th:text="${exam.accessories}"></td>
+      <td th:text="${exam.lens}"></td>
+      <td th:text="${exam.price}"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div>
+  <a href="/clients">Back to Clients List</a>
+  <a th:href="@{/clients/edit(id=${client.id})}">Edit Client</a>
+  <a th:href="@{/clients/delete(id=${client.id})}" onclick="return confirm('Are you sure you want to delete this client?');">Delete Client</a>
+</div>
+</body>
+</html>
