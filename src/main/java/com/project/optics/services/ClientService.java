@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +23,6 @@ import java.util.UUID;
 public class ClientService {
 
     private static final String UPLOAD_DIR = "src/main/resources/static/images/";
-    private final Path root = Paths.get(UPLOAD_DIR);
 
     private final ClientRepository clientRepository;
 
@@ -40,6 +40,7 @@ public class ClientService {
         return clientRepository.searchByNameOrPhoneOrId(query, pageable);
     }
     public Client addClient(Client client) {
+        client.setDateOfCreation(LocalDate.now());
         return clientRepository.save(client);
     }
 

@@ -54,10 +54,6 @@ public class ExamService {
         existingExam.setOdVa(exam.getOdVa());
         existingExam.setOsVa(exam.getOsVa());
 
-
-        existingExam.setIpd(exam.getIpd());
-        existingExam.setKReadingR(exam.getKReadingR());
-        existingExam.setKReadingL(exam.getKReadingL());
         existingExam.setFrame(exam.getFrame());
         existingExam.setAccessories(exam.getAccessories());
         existingExam.setLens(exam.getLens());

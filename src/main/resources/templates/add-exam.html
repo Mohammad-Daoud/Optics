@@ -2,77 +2,117 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Exam</title>
-    <th:block th:include="header :: header"></th:block>
+    <!-- Include Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
 
+    <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>
+    <th:block th:include="header :: header"></th:block>
+    <style>
+        .tables-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .form-table {
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .form-table th, .form-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .form-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
-<h1>Add an Exam for Client</h1>
-<form th:action="@{/exams/add(clientId=${clientId})}" th:object="${exam}" method="post">
+<div class="container mt-4">
+    <h1 class="mb-3">Add an Exam for Client</h1>
+    <form th:action="@{/exams/add(clientId=${clientId})}" th:object="${exam}" method="post">
 
-    <table border="1">
-        <thead>
-        <tr>
-            <th>Date Last Exam</th>
-            <th>Sph</th>
-            <th>Cyl</th>
-            <th>Axis</th>
-            <th>Add</th>
-            <th>CL</th>
-            <th>V/A</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td><input type="date" th:field="*{dateLastExam}"/></td>
-        <tr>
-            <td>OD</td>
-            <td><input type="text" th:field="*{odSph}"/></td>
-            <td><input type="text" th:field="*{odCyl}"/></td>
-            <td><input type="text" th:field="*{odAxis}"/></td>
-            <td><input type="text" th:field="*{odAdd}"/></td>
-            <td><input type="text" th:field="*{odCl}"/></td>
-            <td><input type="text" th:field="*{odVa}"/></td>
+        <!-- Flexbox container for tables -->
+        <div class="tables-container">
+            <!-- First Table -->
+            <table class="table table-bordered form-table">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Date Last Exam</th>
+                    <th>Sph</th>
+                    <th>Cyl</th>
+                    <th>Axis</th>
+                    <th>Add</th>
+                    <th>CL</th>
+                    <th>V/A</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><input type="date" th:field="*{dateLastExam}" class="form-control form-control-sm"/></td>
+                </tr>
+                <tr>
+                    <td>OD</td>
+                    <td><input type="text" th:field="*{odSph}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{odCyl}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{odAxis}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{odAdd}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{odCl}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{odVa}" class="form-control form-control-sm"/></td>
+                </tr>
+                <tr>
+                    <td>OS</td>
+                    <td><input type="text" th:field="*{osSph}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{osCyl}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{osAxis}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{osAdd}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{osCl}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{osVa}" class="form-control form-control-sm"/></td>
+                </tr>
+                </tbody>
+            </table>
 
-        </tr>
-        <tr>
-            <td>OS</td>
-            <td><input type="text" th:field="*{osSph}"/></td>
-            <td><input type="text" th:field="*{osCyl}"/></td>
-            <td><input type="text" th:field="*{osAxis}"/></td>
-            <td><input type="text" th:field="*{osAdd}"/></td>
-            <td><input type="text" th:field="*{osCl}"/></td>
-            <td><input type="text" th:field="*{osVa}"/></td>
-        </tr>
-        </tr>
-        </tbody>
-    </table>
+            <!-- Second Table -->
+            <table class="table table-bordered form-table" style="margin-bottom: 0 !important; text-align: center !important;">
+                <thead class="thead-dark">
+                <tr>
+                    <th>
+                        IPD <br/> K.Reading R L <br/>
+                    </th>
+                </tr>
 
-    <table border="1">
-        <thead>
-        <tr>
-            <th>IPD</th>
-        </tr>
-        <tr>
-            <th>K.Reading R</th>
-            <th>K.Reading L</th>
-        </tr>
-        <tr>
-            <th>Frame</th>
-            <th>Accessories</th>
-            <th>Lens</th>
-            <th>Price</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td><input type="text" th:field="*{frame}"/></td>
-            <td><input type="text" th:field="*{accessories}"/></td>
-            <td><input type="text" th:field="*{lens}"/></td>
-            <td><input type="text" th:field="*{price}"/></td>
-        </tr>
-        </tbody>
-    </table>
-    <button type="submit">Add Exam</button>
-</form>
+                </thead>
+            </table>
+            <table class="table table-bordered form-table" style="margin-top: 0 !important;">
+
+                <thead class="thead-dark">
+                <tr>
+                    <th>Frame</th>
+                    <th>Accessories</th>
+                    <th>Lens</th>
+                    <th>Price</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><input type="text" th:field="*{frame}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{accessories}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{lens}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{price}" class="form-control form-control-sm"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Add Exam</button>
+    </form>
+</div>
 </body>
 </html>

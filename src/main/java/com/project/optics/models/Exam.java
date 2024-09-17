@@ -34,11 +34,6 @@ public class Exam {
     private String osCl;
     private String osVa;
 
-    private String ipd;
-
-    // Additional Fields
-    private String kReadingR;
-    private String kReadingL;
     private String frame;
     private String accessories;
     private String lens;

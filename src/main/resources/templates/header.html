@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Header</title>
-  <style>
-    .search-form {
-      display: inline-block;
-      margin: 10px;
-    }
-  </style>
+    <title>Header</title>
 </head>
 <body>
 <header>
-  <form th:action="@{/clients/search}" method="get" class="search-form">
-    <input type="text" name="query" placeholder="Search by name, phone, or ID" />
-    <button type="submit">Search</button>
-  </form>
+    <form th:action="@{/clients/search}" method="get"
+          class="row mt-3 gx-3 gy-2 align-items-center justify-content-center">
+        <!-- Smaller input field with Bootstrap class -->
+        <div class="col-sm-6">
+            <input type="text" name="query" placeholder="Search by name, phone, or ID"
+                   class="form-control form-control-sm mr-2" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary btn-sm">Search</button>
+        </div>
+    </form>
 </header>
 </body>
 </html>
