@@ -3,6 +3,7 @@ package com.project.optics;
 
 
 
+import com.project.optics.utils.NetworkUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -21,9 +22,10 @@ public class OpticsApplication {
 
 	private static String getUrl(ApplicationContext context) {
 		Environment environment = context.getBean(Environment.class);
-		String url = environment.getProperty("optics.server.url");
 		String port = environment.getProperty("server.port");
-		return url + ":" + port;
+		String localIP = NetworkUtil.getLocalIpAddress();
+
+		return "http://"+ localIP+":" + port;
 	}
 
 	public static void openBrowser(String url) {

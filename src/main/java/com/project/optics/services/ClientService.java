@@ -37,6 +37,7 @@ public class ClientService {
     }
 
     public Page<Client> searchClients(String query, Pageable pageable) {
+        query = query.trim();
         return clientRepository.searchByNameOrPhoneOrId(query, pageable);
     }
     public Client addClient(Client client) {
