@@ -75,5 +75,13 @@ public class ExamController {
         examService.updateExam(exam);
         return "redirect:/clients/view?id=" + exam.getClient().getId(); // Redirect to client detail page
     }
+
+    @GetMapping("/delete")
+    public String deleteExam(@RequestParam("id") Long examId ) {
+        Exam exam = examService.getExamById(examId);
+        long clientID = exam.getClient().getId();
+        examService.deleteExam(exam);
+        return "redirect:/clients/view?id=" + clientID; // Redirect to client detail page
+    }
 }
 

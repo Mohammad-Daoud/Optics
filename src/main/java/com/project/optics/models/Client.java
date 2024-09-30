@@ -38,6 +38,9 @@ public class Client {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<Exam> exams = new ArrayList<>();
 
-    private String imageUrl;
+    @ElementCollection
+    @CollectionTable(name = "client_images", joinColumns = @JoinColumn(name = "client_id"))
+    @Column(name = "image_url")
+    private List<String> imageUrls = new ArrayList<>();
 
 }

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Controller
@@ -43,18 +45,22 @@ public class ClientController {
 
     @PostMapping("/add")
     public String addClient(@ModelAttribute("client") @Valid Client client,
-                            @RequestParam("imageFile") MultipartFile imageFile, BindingResult result) throws IOException {
+                            @RequestParam("imageFiles") MultipartFile[] imageFiles, BindingResult result) throws IOException {
         if (result.hasErrors()) {
             return "add-client";
         }
-
-        // Handle image upload
-        if (!imageFile.isEmpty()) {
-            String imageUrl = clientService.saveClientImage(imageFile);
-            client.setImageUrl(imageUrl);
+        // Handle multiple image uploads
+        List<String> imageUrls = new ArrayList<>();
+        for (MultipartFile imageFile : imageFiles) {
+            if (!imageFile.isEmpty()) {
+                String imageUrl = clientService.saveClientImage(imageFile);
+                imageUrls.add(imageUrl);  // Add the image URL to the list
+            }
         }
+        // Set the list of image URLs in the client
+        client.setImageUrls(imageUrls);
         clientService.addClient(client);
-        return "redirect:/clients/view?id="+client.getId(); // Redirect to client listing or confirmation page
+        return "redirect:/clients/view?id=" + client.getId(); // Redirect to client view
     }
     @GetMapping("/view")
     public String viewClient(@RequestParam("id") Long id, Model model) {
@@ -102,10 +108,10 @@ public class ClientController {
             return "edit-client"; // Show the form again if there are validation errors
         }
         // Handle image upload
-        if (!imageFile.isEmpty()) {
+ /*       if (!imageFile.isEmpty()) {
             String imageUrl = clientService.saveClientImage(imageFile);
-            client.setImageUrl(imageUrl);
-        }
+            client.setImageUrls(imageUrl);
+        }*/
         clientService.updateClient(client);
         return "redirect:/clients/view?id=" + client.getId(); // Redirect to client detail page
     }

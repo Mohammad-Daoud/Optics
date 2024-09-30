@@ -7,6 +7,8 @@ import com.project.optics.models.Client;
 import com.project.optics.repositories.ExamRepository;
 import com.project.optics.repositories.ClientRepository;
 
+import java.time.LocalDate;
+
 @Service
 public class ExamService {
 
@@ -26,6 +28,7 @@ public class ExamService {
     public Exam addExam(Exam exam, Long clientId) {
         Client client = clientRepository.findById(clientId).orElseThrow(() -> new RuntimeException("Client not found"));
         exam.setClient(client); // Associate the exam with the client
+        exam.setDateLastExam(LocalDate.now());
         return examRepository.save(exam);
     }
 
@@ -47,18 +50,21 @@ public class ExamService {
         existingExam.setOdAdd(exam.getOdAdd());
         existingExam.setOsAdd(exam.getOsAdd());
 
-        existingExam.setOdCl(exam.getOdCl());
-        existingExam.setOsCl(exam.getOsCl());
+        existingExam.setOdLens(exam.getOdLens());
+        existingExam.setOsLens(exam.getOsLens());
 
 
         existingExam.setOdVa(exam.getOdVa());
         existingExam.setOsVa(exam.getOsVa());
 
-        existingExam.setFrame(exam.getFrame());
-        existingExam.setAccessories(exam.getAccessories());
-        existingExam.setLens(exam.getLens());
-        existingExam.setPrice(exam.getPrice());
+        existingExam.setContactLens(exam.getContactLens());
+        existingExam.setIpd(exam.getIpd());
+        existingExam.setKReading(exam.getKReading());
         return examRepository.save(existingExam);
+    }
+
+    public void deleteExam(Exam exam) {
+        examRepository.deleteById(exam.getId());
     }
 }
 

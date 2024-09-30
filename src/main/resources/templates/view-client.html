@@ -7,6 +7,14 @@
     <th:block th:include="header :: header"></th:block>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <style>
+        /* Set max-height and max-width for images */
+        .carousel-item img {
+            max-height: 100%; /* Full viewport height */
+            width: 100%;       /* Full width */
+            object-fit: contain; /* Maintain aspect ratio */
+        }
+    </style>
 
 
 </head>
@@ -52,25 +60,48 @@
     </div>
 
 
-    <!-- Image Popup -->
-    <div th:if="${client.imageUrl != null}">
+
+    <!-- Modal for displaying full-size image -->
+    <div th:if="${client.imageUrls != null && !client.imageUrls.isEmpty()}">
         <p><strong>Attachments:</strong></p>
-        <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
-            <img th:src="@{'/images/' + ${client.imageUrl}}" alt="Client Image" class="img-thumbnail"
-                 style="max-width: 150px; cursor: pointer;"/>
-        </a>
+        <div class="d-flex flex-wrap">
+            <!-- Display Image Buttons -->
+            <button type="button" class="btn btn-outline-primary m-2"
+                    data-bs-toggle="modal" data-bs-target="#imageModal">
+                View Attachments
+            </button>
+        </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal for Viewing Images with Carousel -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel" th:text="${client.firstName}+' '+${client.lastName}+' Attachment'">Client Attachment</h5>
+                    <h5 class="modal-title" id="imageModalLabel">Client Attachments:</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-0">
-                    <img th:src="@{'/images/' + ${client.imageUrl}}" alt="Client Image" class="img-fluid w-100"/>
+                <div class="modal-body">
+                    <!-- Bootstrap Carousel for Images -->
+                    <div id="carouselExampleIndicators" class="carousel slide" data-bs-interval="false">
+                        <div class="carousel-inner">
+                            <div th:each="imageUrl, iterStat : ${client.imageUrls}"
+                                 class="carousel-item" th:classappend="${iterStat.index == 0}? 'active' : ''">
+                                <img th:src="${imageUrl}" class="d-block w-100" alt="Client Image">
+                            </div>
+                        </div>
+                        <!-- Left and right controls -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                                data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                                data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -79,31 +110,16 @@
 
 <!-- Include Bootstrap JS and dependencies -->
 
-
-<!-- Modal -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel">Client Image</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <img th:src="@{'/images/' + ${client.imageUrl}}" alt="Client Image" class="img-fluid"/>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="mt-4">
     <h2>Exams</h2>
     <a th:href="@{/exams/add(id=${client.id})}" class="btn btn-primary mb-3">Add new exam</a>
 
     <div th:if="${client.exams != null && !client.exams.isEmpty()}">
         <div th:each="exam, iterStat : ${client.exams}" class="border border-primary rounded mb-2">
+
             <div class="table-responsive">
                 <table class="table table-bordered">
-                    <thead class="thead-dark" style="color: gray !important;">
+                    <thead class="thead-dark">
                     <tr>
                         <th>No.</th>
                         <th>Date Last Exam</th>
@@ -112,9 +128,8 @@
                         <th>Cyl</th>
                         <th>Axis</th>
                         <th>Add</th>
-                        <th>CL</th>
                         <th>V/A</th>
-                        <th>Actions</th>
+                        <th>Lens</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -126,11 +141,8 @@
                         <td th:text="${exam.odCyl}"></td>
                         <td th:text="${exam.odAxis}"></td>
                         <td th:text="${exam.odAdd}"></td>
-                        <td th:text="${exam.odCl}"></td>
                         <td th:text="${exam.odVa}"></td>
-                        <td rowspan="2">
-                            <a th:href="@{/exams/edit(id=${exam.id})}" class="btn btn-sm btn-info">Edit</a>
-                        </td>
+                        <td th:text="${exam.odLens}"></td>
                     </tr>
 
                     <tr>
@@ -139,8 +151,8 @@
                         <td th:text="${exam.osCyl}"></td>
                         <td th:text="${exam.osAxis}"></td>
                         <td th:text="${exam.osAdd}"></td>
-                        <td th:text="${exam.osCl}"></td>
                         <td th:text="${exam.osVa}"></td>
+                        <td th:text="${exam.osLens}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -153,31 +165,54 @@
                     <thead class="thead-dark">
                     <tr>
                         <th>
-                            IPD <br/> K.Reading R L <br/>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#kReadingModal" class="btn btn-outline-primary mt-3">
+                                K.Reading R L <br/>
+                            </a>
                         </th>
                     </tr>
 
                     </thead>
                 </table>
+                <div class="modal fade" id="kReadingModal" tabindex="-1" aria-labelledby="kReadingModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="kReadingModalLabel">K.Reading R L</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label  class="form-label">K.Reading details:</label>
+                                <p th:text="*{exam.KReading}">No K.Reading details found</p>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <table class="table table-bordered form-table" style="margin-top: 0 !important;">
 
                     <thead class="thead-dark">
                     <tr>
-                        <th>Frame</th>
-                        <th>Accessories</th>
-                        <th>Lens</th>
-                        <th>Price</th>
+                        <th>Contact Lens</th>
+                        <th>IPD</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <td th:text="${exam.frame}"></td>
-                        <td th:text="${exam.accessories}"></td>
-                        <td th:text="${exam.lens}"></td>
-                        <td th:text="${exam.price}"></td>
+                        <td th:text="${exam.contactLens}"></td>
+                        <td th:text="${exam.ipd}"></td>
                     </tr>
                     </tbody>
                 </table>
+            </div>
+            <div style="margin: auto; width: 50%; padding: 10px">
+                <a th:href="@{/exams/edit(id=${exam.id})}" class="btn btn-sm btn-info" style="width: 50%;">Edit</a>
+                <a th:href="@{/exams/delete(id=${exam.id})}" class="btn btn-sm btn-danger" style="width: 40%;"
+                   onclick="return confirm('Are you sure you want to delete this Exam?');">Delete</a>
+
             </div>
         </div>
     </div>
@@ -196,6 +231,17 @@
         Client</a>
 </div>
 </div>
+<!--<script>
+    // Optional: Auto-adjust the carousel based on the button clicked
+    document.querySelectorAll('button[data-bs-target="#imageModal"]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const index = button.getAttribute('data-bs-slide-to');
+            const carousel = document.querySelector('#carouselExampleIndicators');
+            const bootstrapCarousel = new bootstrap.Carousel(carousel);
+            bootstrapCarousel.to(index);  // Navigate to the clicked image in the carousel
+        });
+    });
+</script>-->
 <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
 </body>

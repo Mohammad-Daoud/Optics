@@ -24,19 +24,18 @@ public class Exam {
     private String odCyl;
     private String odAxis;
     private String odAdd;
-    private String odCl;
+    private String odLens;
     private String odVa;
 
     private String osSph;
     private String osCyl;
     private String osAxis;
     private String osAdd;
-    private String osCl;
+    private String osLens;
     private String osVa;
 
-    private String frame;
-    private String accessories;
-    private String lens;
-    private BigDecimal price;
+    private String kReading;
+    private String contactLens;
+    private String ipd;
 }
 

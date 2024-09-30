@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -67,22 +68,17 @@ public class ClientService {
         existingClient.setPoBox(client.getPoBox());
         existingClient.setAge(client.getAge());
         existingClient.setOccupation(client.getOccupation());
-        existingClient.setImageUrl(client.getImageUrl());
+        existingClient.setImageUrls(client.getImageUrls());
         return clientRepository.save(existingClient);
     }
 
     public String saveClientImage(MultipartFile imageFile) throws IOException {
-        // Generate a random UUID for the image file name
-        String fileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-        Path filePath = Paths.get(UPLOAD_DIR + fileName);
-
-        // Ensure the upload directory exists
-        Files.createDirectories(filePath.getParent());
-
-        // Save the file locally
-        Files.write(filePath, imageFile.getBytes());
-
-        return fileName; // Return the relative path to the image
+        // Logic to save the image and return the URL.
+        // For simplicity, assuming you are saving it to a folder named 'images'
+        String filename = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+        Path filepath = Paths.get(UPLOAD_DIR, filename);
+        Files.copy(imageFile.getInputStream(), filepath, StandardCopyOption.REPLACE_EXISTING);
+        return "/images/" + filename;  // Return the relative URL
     }
 
 

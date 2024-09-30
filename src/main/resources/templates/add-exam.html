@@ -6,7 +6,7 @@
     <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
 
     <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
-    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
     <th:block th:include="header :: header"></th:block>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -40,33 +40,52 @@
     <h1 class="mb-3">Add an Exam for Client</h1>
     <form th:action="@{/exams/add(clientId=${clientId})}" th:object="${exam}" method="post">
 
+        <!-- Hidden field to store K.Reading data in the form -->
+        <input type="hidden" name="kReading" th:field="*{kReading}">
+
+        <!-- K.Reading Modal with Textarea -->
+        <div class="modal fade" id="kReadingModal" tabindex="-1" aria-labelledby="kReadingModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="kReadingModalLabel">K.Reading R L</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="kReadingTextarea" class="form-label">Enter K.Reading details:</label>
+                        <textarea id="kReadingTextarea" class="form-control" rows="10" cols="10" placeholder="Enter K.Reading details"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="saveKReading()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Flexbox container for tables -->
         <div class="tables-container">
             <!-- First Table -->
             <table class="table table-bordered form-table">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Date Last Exam</th>
+                    <th/>
                     <th>Sph</th>
                     <th>Cyl</th>
                     <th>Axis</th>
                     <th>Add</th>
-                    <th>CL</th>
                     <th>V/A</th>
+                    <th>Lens</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td><input type="date" th:field="*{dateLastExam}" class="form-control form-control-sm"/></td>
-                </tr>
                 <tr>
                     <td>OD</td>
                     <td><input type="text" th:field="*{odSph}" class="form-control form-control-sm"/></td>
                     <td><input type="text" th:field="*{odCyl}" class="form-control form-control-sm"/></td>
                     <td><input type="text" th:field="*{odAxis}" class="form-control form-control-sm"/></td>
                     <td><input type="text" th:field="*{odAdd}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{odCl}" class="form-control form-control-sm"/></td>
                     <td><input type="text" th:field="*{odVa}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{odLens}" class="form-control form-control-sm"/></td>
                 </tr>
                 <tr>
                     <td>OS</td>
@@ -74,8 +93,8 @@
                     <td><input type="text" th:field="*{osCyl}" class="form-control form-control-sm"/></td>
                     <td><input type="text" th:field="*{osAxis}" class="form-control form-control-sm"/></td>
                     <td><input type="text" th:field="*{osAdd}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{osCl}" class="form-control form-control-sm"/></td>
                     <td><input type="text" th:field="*{osVa}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{osLens}" class="form-control form-control-sm"/></td>
                 </tr>
                 </tbody>
             </table>
@@ -85,28 +104,26 @@
                 <thead class="thead-dark">
                 <tr>
                     <th>
-                        IPD <br/> K.Reading R L <br/>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#kReadingModal" class="btn btn-outline-primary mt-3">
+                            K.Reading R L <br/>
+                        </a>
                     </th>
                 </tr>
 
                 </thead>
             </table>
-            <table class="table table-bordered form-table" style="margin-top: 0 !important;">
 
+            <table class="table table-bordered form-table" style="margin-top: 0 !important;">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Frame</th>
-                    <th>Accessories</th>
-                    <th>Lens</th>
-                    <th>Price</th>
+                    <th>Contact Lens</th>
+                    <th>IPD</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td><input type="text" th:field="*{frame}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{accessories}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{lens}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{price}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{contactLens}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" th:field="*{ipd}" class="form-control form-control-sm"/></td>
                 </tr>
                 </tbody>
             </table>
@@ -116,5 +133,22 @@
         <button type="submit" class="btn btn-primary">Add Exam</button>
     </form>
 </div>
+
+
+
+<script>
+    function saveKReading() {
+        const kReadingDetails = document.getElementById('kReadingTextarea').value;
+
+        // Set the value in your form (you need to have a hidden field for K.Reading in your main form)
+        document.querySelector('input[name="kReading"]').value = kReadingDetails ;
+
+        // Close the modal
+        var modal = bootstrap.Modal.getInstance(document.getElementById('kReadingModal'));
+        modal.hide();
+    }
+</script>
+
+
 </body>
 </html>
