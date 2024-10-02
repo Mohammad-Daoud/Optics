@@ -2,12 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Exam</title>
+
+    <th:block th:include="header :: header"></th:block>
+
     <!-- Include Bootstrap CSS -->
     <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
 
+    <!-- Include jQuery and Bootstrap JS -->
     <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
-    <th:block th:include="header :: header"></th:block>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -38,12 +42,13 @@
 <body>
 <div class="container mt-4">
     <h1 class="mb-3">Add an Exam for Client</h1>
-    <form th:action="@{/exams/add(clientId=${clientId})}" th:object="${exam}" method="post">
 
-        <!-- Hidden field to store K.Reading data in the form -->
+    <form th:action="@{/exams/add(id=${client.id})}" th:object="${exam}" method="post">
+
+        <!-- Hidden field for K.Reading -->
         <input type="hidden" name="kReading" th:field="*{kReading}">
 
-        <!-- K.Reading Modal with Textarea -->
+        <!-- Modal for K.Reading Input -->
         <div class="modal fade" id="kReadingModal" tabindex="-1" aria-labelledby="kReadingModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -62,13 +67,14 @@
                 </div>
             </div>
         </div>
+
         <!-- Flexbox container for tables -->
         <div class="tables-container">
             <!-- First Table -->
             <table class="table table-bordered form-table">
                 <thead class="thead-dark">
                 <tr>
-                    <th/>
+                    <th>Eye</th>
                     <th>Sph</th>
                     <th>Cyl</th>
                     <th>Axis</th>
@@ -99,21 +105,21 @@
                 </tbody>
             </table>
 
-            <!-- Second Table -->
-            <table class="table table-bordered form-table" style="margin-bottom: 0 !important; text-align: center !important;">
+            <!-- K.Reading Button -->
+            <table class="table table-bordered form-table" style="text-align: center;">
                 <thead class="thead-dark">
                 <tr>
                     <th>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#kReadingModal" class="btn btn-outline-primary mt-3">
-                            K.Reading R L <br/>
-                        </a>
+                        <button type="button" class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#kReadingModal">
+                            K.Reading R L
+                        </button>
                     </th>
                 </tr>
-
                 </thead>
             </table>
 
-            <table class="table table-bordered form-table" style="margin-top: 0 !important;">
+            <!-- Contact Lens and IPD Table -->
+            <table class="table table-bordered form-table">
                 <thead class="thead-dark">
                 <tr>
                     <th>Contact Lens</th>
@@ -134,21 +140,18 @@
     </form>
 </div>
 
-
-
 <script>
     function saveKReading() {
         const kReadingDetails = document.getElementById('kReadingTextarea').value;
 
-        // Set the value in your form (you need to have a hidden field for K.Reading in your main form)
-        document.querySelector('input[name="kReading"]').value = kReadingDetails ;
+        // Set the value in the hidden field for K.Reading in the form
+        document.querySelector('input[name="kReading"]').value = kReadingDetails;
 
         // Close the modal
-        var modal = bootstrap.Modal.getInstance(document.getElementById('kReadingModal'));
+        const modal = bootstrap.Modal.getInstance(document.getElementById('kReadingModal'));
         modal.hide();
     }
 </script>
-
 
 </body>
 </html>

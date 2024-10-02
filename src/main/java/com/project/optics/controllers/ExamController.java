@@ -1,16 +1,14 @@
 package com.project.optics.controllers;
 
+import com.project.optics.models.Exam;
+import com.project.optics.services.ExamService;
+import com.project.optics.services.ClientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import com.project.optics.models.Exam;
-import com.project.optics.services.ExamService;
-import com.project.optics.services.ClientService;
-import com.project.optics.models.Client;
-
 
 @Controller
 @RequestMapping("/exams")
@@ -27,61 +25,43 @@ public class ExamController {
 
     @GetMapping("/add")
     public String showAddExamForm(@RequestParam("id") Long clientId, Model model) {
-        Client client = clientService.getClientById(clientId);
-        if (client == null) {
-            // Handle the case where the client is not found
-            return "redirect:/clients"; // Redirect to clients list if client is not found
-        }
-        model.addAttribute("clientId", clientId);
+        model.addAttribute("client", clientService.getClientById(clientId));
         model.addAttribute("exam", new Exam());
-        return "add-exam"; // Return the Thymeleaf template to add an exam
+        return "add-exam";
     }
 
     @PostMapping("/add")
-    public String addExam(@RequestParam("clientId") Long clientId,
+    public String addExam(@RequestParam("id") Long clientId,
                           @ModelAttribute("exam") @Valid Exam exam,
                           BindingResult result,
                           Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("clientId", clientId);
-            return "add-exam"; // Return the form again if there are validation errors
+            model.addAttribute("client", clientService.getClientById(clientId));
+            return "add-exam";
         }
-        Client client = clientService.getClientById(clientId);
-        if (client == null) {
-            return "redirect:/clients"; // Redirect to clients list if client is not found
-        }
-        exam.setClient(client); // Associate the exam with the client
         examService.addExam(exam, clientId);
-        return "redirect:/clients/view?id=" + clientId; // Redirect to the client detail page after adding an exam
+        return "redirect:/clients/view?id=" + clientId;
     }
 
     @GetMapping("/edit")
     public String showEditExamForm(@RequestParam("id") Long examId, Model model) {
-        Exam exam = examService.getExamById(examId);
-        if (exam == null) {
-            return "redirect:/clients"; // Redirect if exam not found
-        }
-        model.addAttribute("exam", exam);
-        return "edit-exam"; // Thymeleaf template for editing exam
+        model.addAttribute("exam", examService.getExamById(examId));
+        return "edit-exam";
     }
 
-    // Handle form submission for editing an exam
     @PostMapping("/edit")
-    public String editExam(@ModelAttribute("exam") @Valid Exam exam, BindingResult result, Model model) {
+    public String editExam(@ModelAttribute("exam") @Valid Exam exam, BindingResult result) {
         if (result.hasErrors()) {
-            return "edit-exam"; // Show the form again if there are validation errors
+            return "edit-exam";
         }
-
         examService.updateExam(exam);
-        return "redirect:/clients/view?id=" + exam.getClient().getId(); // Redirect to client detail page
+        return "redirect:/clients/view?id=" + examService.getExamById(exam.getId()).getClient().getId();
     }
 
     @GetMapping("/delete")
-    public String deleteExam(@RequestParam("id") Long examId ) {
-        Exam exam = examService.getExamById(examId);
-        long clientID = exam.getClient().getId();
-        examService.deleteExam(exam);
-        return "redirect:/clients/view?id=" + clientID; // Redirect to client detail page
+    public String deleteExam(@RequestParam("id") Long examId) {
+        long clientId = examService.getClientIdByExamId(examId);
+        examService.deleteExamById(examId);
+        return "redirect:/clients/view?id=" + clientId;
     }
 }
-

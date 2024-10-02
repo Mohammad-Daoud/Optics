@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Edit Client Images</title>
+  <!-- Include Bootstrap CSS -->
+  <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
+  <th:block th:include="header :: header"></th:block>
+
+  <style>
+    .image-container {
+      position: relative;
+      display: inline-block;
+      margin: 10px;
+    }
+    .image-container img {
+      max-width: 200px;
+    }
+    .delete-button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: rgba(255, 0, 0, 0.7);
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .delete-button:hover {
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-4">
+  <h1 class="mb-3">Edit Images for Client: <span th:text="${client.firstName} + ' ' + ${client.lastName}"></span></h1>
+
+  <!-- List existing images with delete option -->
+  <div th:if="${client.imageUrls != null && !client.imageUrls.isEmpty()}">
+    <h3>Current Images</h3>
+    <div class="row">
+      <div class="col-12 d-flex flex-wrap" th:each="imageUrl : ${client.imageUrls}">
+        <div class="image-container">
+          <img th:src="${imageUrl}" class="img-thumbnail"/>
+          <form th:action="@{/clients/images/delete}" method="post" class="d-inline">
+            <input type="hidden" name="id" th:value="${client.id}"/>
+            <input type="hidden" name="imageUrl" th:value="${imageUrl}"/>
+            <button type="submit" class="delete-button">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload new images -->
+  <h3>Upload New Images</h3>
+  <form th:action="@{/clients/images/add}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="id" th:value="${client.id}"/>
+    <div class="mb-3">
+      <label for="imageFiles" class="form-label">Choose Images</label>
+      <input type="file" id="imageFiles" name="imageFiles" class="form-control" multiple required/>
+    </div>
+    <button type="submit" class="btn btn-primary">Save & Upload Images</button>
+  </form>
+
+  <!-- Go back to client details -->
+  <div class="mt-4">
+    <a th:href="@{/clients/view(id=${client.id})}" class="btn btn-secondary">Back to Client Details</a>
+    <a th:href="@{/clients/edit(id=${client.id})}" class="btn btn-secondary">Back to Edit Client Page</a>
+  </div>
+
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

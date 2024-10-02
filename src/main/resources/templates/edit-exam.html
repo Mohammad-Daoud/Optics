@@ -6,7 +6,7 @@
   <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
 
   <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
-  <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>
+  <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
   <th:block th:include="header :: header"></th:block>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -33,6 +33,14 @@
     .form-table th {
       background-color: #f2f2f2;
     }
+
+    .modal .modal-dialog {
+      max-width: 600px;
+    }
+
+    .modal .modal-body {
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
@@ -40,13 +48,14 @@
   <h1 class="mb-3">Edit Exam</h1>
   <form th:action="@{/exams/edit}" th:object="${exam}" method="post">
     <input type="hidden" th:field="*{id}"/>
+
     <!-- Flexbox container for tables -->
     <div class="tables-container">
-      <!-- First Table -->
+      <!-- First Table: OD and OS Details -->
       <table class="table table-bordered form-table">
         <thead class="thead-dark">
         <tr>
-          <th/>
+          <th></th>
           <th>Sph</th>
           <th>Cyl</th>
           <th>Axis</th>
@@ -77,15 +86,15 @@
         </tbody>
       </table>
 
-      <!-- Second Table -->
-      <table class="table table-bordered form-table" style="margin-bottom: 0 !important; text-align: center !important;">
+      <!-- K.Reading Modal -->
+      <table class="table table-bordered form-table" style="margin-bottom: 0; text-align: center;">
         <thead class="thead-dark">
         <tr>
           <th>
             <a href="#" data-bs-toggle="modal" data-bs-target="#kReadingModal" class="btn btn-outline-primary mt-3">
-              K.Reading R L <br/>
-
+              K.Reading R L
             </a>
+
             <!-- K.Reading Modal with Textarea -->
             <div class="modal fade" id="kReadingModal" tabindex="-1" aria-labelledby="kReadingModalLabel" aria-hidden="true">
               <div class="modal-dialog">
@@ -96,7 +105,7 @@
                   </div>
                   <div class="modal-body">
                     <label for="kReadingTextarea" class="form-label">Enter K.Reading details:</label>
-                    <textarea id="kReadingTextarea" class="form-control" rows="10" cols="10" placeholder="Enter K.Reading details"
+                    <textarea id="kReadingTextarea" class="form-control" rows="6" placeholder="Enter K.Reading details"
                               th:field="*{kReading}"></textarea>
                   </div>
                   <div class="modal-footer">
@@ -108,11 +117,11 @@
             </div>
           </th>
         </tr>
-
         </thead>
       </table>
-      <table class="table table-bordered form-table" style="margin-top: 0 !important;">
 
+      <!-- Contact Lens and IPD -->
+      <table class="table table-bordered form-table" style="margin-top: 0;">
         <thead class="thead-dark">
         <tr>
           <th>Contact Lens</th>
@@ -129,19 +138,14 @@
     </div>
 
     <!-- Submit Button -->
-    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+    <a th:href="@{/clients/view(id=${exam.client.id})}" class="btn btn-outline-primary mt-3">Back to Client Details</a>
   </form>
 
-  <div>
-    <a href="/clients/view?id=" th:href="@{/clients/view(id=${exam.client.id})}" class="btn btn-outline-primary mt-3">Back to Client Details</a>
-  </div>
 </div>
-
-
 
 <script>
   function saveKReading() {
-    // Close the modal
     var modal = bootstrap.Modal.getInstance(document.getElementById('kReadingModal'));
     modal.hide();
   }

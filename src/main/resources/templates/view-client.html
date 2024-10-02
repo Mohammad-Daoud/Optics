@@ -2,9 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>View Client</title>
+    <th:block th:include="header :: header"></th:block>
+
     <!-- Include Bootstrap CSS -->
     <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
-    <th:block th:include="header :: header"></th:block>
+
+    <!-- Include jQuery and Bootstrap JS -->
+    <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -15,108 +21,95 @@
             object-fit: contain; /* Maintain aspect ratio */
         }
     </style>
-
-
 </head>
 <body class="container mb-4">
 <div class="container mt-4">
+    <h1 class="mb-3">Client Information</h1>
+    <div class="row mb-3">
+        <div class="col-sm-4"><strong>ID:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.id}"></span></div>
 
-    <div class="container mt-4">
-        <h1 class="mb-3">Client Information</h1>
-        <div class="row mb-3">
-            <div class="col-sm-4"><strong>ID:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.id}"></span></div>
+        <div class="col-sm-4"><strong>First Name:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.firstName}"></span></div>
 
-            <div class="col-sm-4"><strong>First Name:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.firstName}"></span></div>
+        <div class="col-sm-4"><strong>Second Name:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.secondName}"></span></div>
 
-            <div class="col-sm-4"><strong>Second Name:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.secondName}"></span></div>
+        <div class="col-sm-4"><strong>Third Name:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.thirdName}"></span></div>
 
-            <div class="col-sm-4"><strong>Third Name:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.thirdName}"></span></div>
+        <div class="col-sm-4"><strong>Last Name:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.lastName}"></span></div>
 
-            <div class="col-sm-4"><strong>Last Name:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.lastName}"></span></div>
+        <div class="col-sm-4"><strong>Address:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.address}"></span></div>
 
-            <div class="col-sm-4"><strong>Address:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.address}"></span></div>
+        <div class="col-sm-4"><strong>Phone Number:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.phoneNumber}"></span></div>
 
-            <div class="col-sm-4"><strong>Phone Number:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.phoneNumber}"></span></div>
+        <div class="col-sm-4"><strong>P.O. Box:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.poBox}"></span></div>
 
-            <div class="col-sm-4"><strong>P.O. Box:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.poBox}"></span></div>
+        <div class="col-sm-4"><strong>Date of Creation:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.dateOfCreation}"></span></div>
 
-            <div class="col-sm-4"><strong>Date of Creation:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.dateOfCreation}"></span></div>
+        <div class="col-sm-4"><strong>Age:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.age}"></span></div>
 
-            <div class="col-sm-4"><strong>Age:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.age}"></span></div>
-
-            <div class="col-sm-4"><strong>Occupation:</strong></div>
-            <div class="col-sm-8"><span th:text="${client.occupation}"></span></div>
-        </div>
+        <div class="col-sm-4"><strong>Occupation:</strong></div>
+        <div class="col-sm-8"><span th:text="${client.occupation}"></span></div>
     </div>
+</div>
 
-
-
-    <!-- Modal for displaying full-size image -->
-    <div th:if="${client.imageUrls != null && !client.imageUrls.isEmpty()}">
-        <p><strong>Attachments:</strong></p>
-        <div class="d-flex flex-wrap">
-            <!-- Display Image Buttons -->
-            <button type="button" class="btn btn-outline-primary m-2"
-                    data-bs-toggle="modal" data-bs-target="#imageModal">
-                View Attachments
-            </button>
-        </div>
+<!-- Modal for displaying full-size images -->
+<div th:if="${client.imageUrls != null && !client.imageUrls.isEmpty()}">
+    <p><strong>Attachments:</strong></p>
+    <div class="d-flex flex-wrap">
+        <!-- Button to open image modal -->
+        <button type="button" class="btn btn-outline-primary m-2" data-bs-toggle="modal" data-bs-target="#imageModal">
+            View Attachments
+        </button>
     </div>
+</div>
 
-    <!-- Modal for Viewing Images with Carousel -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel">Client Attachments:</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Bootstrap Carousel for Images -->
-                    <div id="carouselExampleIndicators" class="carousel slide" data-bs-interval="false">
-                        <div class="carousel-inner">
-                            <div th:each="imageUrl, iterStat : ${client.imageUrls}"
-                                 class="carousel-item" th:classappend="${iterStat.index == 0}? 'active' : ''">
-                                <img th:src="${imageUrl}" class="d-block w-100" alt="Client Image">
-                            </div>
+<!-- Modal for Viewing Images with Carousel -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Client Attachments:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Bootstrap Carousel for Images -->
+                <div id="carouselExampleIndicators" class="carousel slide" data-bs-interval="false">
+                    <div class="carousel-inner">
+                        <div th:each="imageUrl, iterStat : ${client.imageUrls}"
+                             class="carousel-item" th:classappend="${iterStat.index == 0}? 'active' : ''">
+                            <img th:src="@{${imageUrl}}" class="d-block w-100" alt="Client Image">
                         </div>
-                        <!-- Left and right controls -->
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
-                                data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
-                                data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
                     </div>
+                    <!-- Previous and next controls -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Include Bootstrap JS and dependencies -->
-
 <div class="mt-4">
     <h2>Exams</h2>
-    <a th:href="@{/exams/add(id=${client.id})}" class="btn btn-primary mb-3">Add new exam</a>
+    <a th:href="@{/exams/add(id=${client.id})}" class="btn btn-primary mb-3">Add New Exam</a>
 
     <div th:if="${client.exams != null && !client.exams.isEmpty()}">
         <div th:each="exam, iterStat : ${client.exams}" class="border border-primary rounded mb-2">
-
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead class="thead-dark">
@@ -134,7 +127,7 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td th:text="${iterStat.index+1}" rowspan="2"></td>
+                        <td th:text="${iterStat.index + 1}" rowspan="2"></td>
                         <td th:text="${exam.dateLastExam}" rowspan="2"></td>
                         <td>OD</td>
                         <td th:text="${exam.odSph}"></td>
@@ -144,7 +137,6 @@
                         <td th:text="${exam.odVa}"></td>
                         <td th:text="${exam.odLens}"></td>
                     </tr>
-
                     <tr>
                         <td>OS</td>
                         <td th:text="${exam.osSph}"></td>
@@ -158,91 +150,117 @@
                 </table>
             </div>
 
+            <!-- K.Reading -->
             <div class="table-responsive">
-                <!-- Second Table -->
-                <table class="table table-bordered form-table"
-                       style="margin-bottom: 0 !important; text-align: center !important;">
+                <table class="table table-bordered form-table text-center">
                     <thead class="thead-dark">
                     <tr>
                         <th>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#kReadingModal" class="btn btn-outline-primary mt-3">
-                                K.Reading R L <br/>
-                            </a>
+                            <button type="button" class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#kReadingModal">
+                                K.Reading R L
+                            </button>
                         </th>
                     </tr>
-
                     </thead>
                 </table>
-                <div class="modal fade" id="kReadingModal" tabindex="-1" aria-labelledby="kReadingModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+            </div>
+
+            <!-- Modal for K.Reading -->
+            <div class="modal fade" id="kReadingModal" tabindex="-1" aria-labelledby="kReadingModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="kReadingModalLabel">K.Reading R L</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <label class="form-label">K.Reading details:</label>
+                            <p th:text="${exam.kReading}">No K.Reading details found</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Lens and IPD -->
+            <table class="table table-bordered form-table">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Contact Lens</th>
+                    <th>IPD</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td th:text="${exam.contactLens}"></td>
+                    <td th:text="${exam.ipd}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Edit and Delete Exam -->
+            <div class="text-center my-3">
+                <a th:href="@{/exams/edit(id=${exam.id})}" class="btn btn-info btn-sm">Edit</a>
+                <!-- Exam Delete Button -->
+                <a href="#" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteExamModal"
+                   th:attr="data-exam-id=${exam.id}">Delete</a>
+
+                <!-- Delete Exam Confirmation Modal -->
+                <div class="modal fade" id="deleteExamModal" tabindex="-1" aria-labelledby="deleteExamModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="kReadingModalLabel">K.Reading R L</h5>
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="deleteExamModalLabel">Delete Exam Confirmation</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <label  class="form-label">K.Reading details:</label>
-                                <p th:text="*{exam.KReading}">No K.Reading details found</p>
-
+                                <p>Are you sure you want to delete this exam? This action cannot be undone.</p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <a th:href="@{/exams/delete(id=${exam.id})}" id="confirmDeleteExam" class="btn btn-danger">Delete</a>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <table class="table table-bordered form-table" style="margin-top: 0 !important;">
-
-                    <thead class="thead-dark">
-                    <tr>
-                        <th>Contact Lens</th>
-                        <th>IPD</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td th:text="${exam.contactLens}"></td>
-                        <td th:text="${exam.ipd}"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div style="margin: auto; width: 50%; padding: 10px">
-                <a th:href="@{/exams/edit(id=${exam.id})}" class="btn btn-sm btn-info" style="width: 50%;">Edit</a>
-                <a th:href="@{/exams/delete(id=${exam.id})}" class="btn btn-sm btn-danger" style="width: 40%;"
-                   onclick="return confirm('Are you sure you want to delete this Exam?');">Delete</a>
 
             </div>
         </div>
     </div>
 
     <div th:if="${client.exams == null || client.exams.isEmpty()}">
-        <h1 th:text="${client.firstName}+${client.lastName}+' has no exams'"></h1>
+        <h1 th:text="${client.firstName} + ' ' + ${client.lastName} + ' has no exams'"></h1>
+    </div>
+</div>
+
+<!-- Back to Clients List and Edit/Delete Client -->
+<div class="mt-4 mb-6 text-center">
+    <a href="/clients" class="btn btn-secondary">Back to Clients List</a>
+    <a th:href="@{/clients/edit(id=${client.id})}" class="btn btn-warning">Edit Client</a>
+    <!-- Client Delete Button -->
+    <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteClientModal">Delete Client</a>
+
+    <!-- Delete Client Confirmation Modal -->
+    <div class="modal fade" id="deleteClientModal" tabindex="-1" aria-labelledby="deleteClientModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteClientModalLabel">Delete Client Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this client? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a th:href="@{/clients/delete(id=${client.id})}" id="confirmDeleteClient" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>
-
-<div class="mt-4 mb-6">
-    <a href="/clients" class="btn btn-secondary">Back to Clients List</a>
-    <a th:href="@{/clients/edit(id=${client.id})}" class="btn btn-warning">Edit Client</a>
-    <a th:href="@{/clients/delete(id=${client.id})}"
-       onclick="return confirm('Are you sure you want to delete this client?');" class="btn btn-danger">Delete
-        Client</a>
-</div>
-</div>
-<!--<script>
-    // Optional: Auto-adjust the carousel based on the button clicked
-    document.querySelectorAll('button[data-bs-target="#imageModal"]').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const index = button.getAttribute('data-bs-slide-to');
-            const carousel = document.querySelector('#carouselExampleIndicators');
-            const bootstrapCarousel = new bootstrap.Carousel(carousel);
-            bootstrapCarousel.to(index);  // Navigate to the clicked image in the carousel
-        });
-    });
-</script>-->
-<script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

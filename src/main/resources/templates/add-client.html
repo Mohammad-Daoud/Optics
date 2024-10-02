@@ -2,90 +2,109 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Client</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Include Header -->
     <th:block th:include="header :: header"></th:block>
+
     <!-- Include Bootstrap CSS -->
     <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
 
+    <!-- Include jQuery and Bootstrap JS -->
     <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.min.js}"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 </head>
 <body>
 <div class="container mt-4">
-    <h1 class="mb-3">Add a New Client</h1>
+    <h1 class="mb-3 text-center">Add a New Client</h1>
+
+    <!-- Add Client Form -->
     <form th:action="@{/clients/add}" th:object="${client}" method="post" enctype="multipart/form-data" class="needs-validation">
-        <div class="form-group row m-2">
+
+        <!-- First Name -->
+        <div class="form-group row mb-3">
             <label for="firstName" class="col-sm-2 col-form-label">First Name:</label>
             <div class="col-sm-10">
                 <input type="text" id="firstName" th:field="*{firstName}" class="form-control" required/>
             </div>
         </div>
 
-        <div class="form-group row m-2">
+        <!-- Second Name -->
+        <div class="form-group row mb-3">
             <label for="secondName" class="col-sm-2 col-form-label">Second Name:</label>
             <div class="col-sm-10">
                 <input type="text" id="secondName" th:field="*{secondName}" class="form-control"/>
             </div>
         </div>
 
-        <div class="form-group row m-2">
+        <!-- Third Name -->
+        <div class="form-group row mb-3">
             <label for="thirdName" class="col-sm-2 col-form-label">Third Name:</label>
             <div class="col-sm-10">
                 <input type="text" id="thirdName" th:field="*{thirdName}" class="form-control"/>
             </div>
         </div>
 
-        <div class="form-group row m-2">
+        <!-- Last Name -->
+        <div class="form-group row mb-3">
             <label for="lastName" class="col-sm-2 col-form-label">Last Name:</label>
             <div class="col-sm-10">
                 <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required/>
             </div>
         </div>
 
-        <div class="form-group row m-2">
+        <!-- Address -->
+        <div class="form-group row mb-3">
             <label for="address" class="col-sm-2 col-form-label">Address:</label>
             <div class="col-sm-10">
                 <input type="text" id="address" th:field="*{address}" class="form-control"/>
             </div>
         </div>
 
-        <div class="form-group row m-2">
+        <!-- Phone Number -->
+        <div class="form-group row mb-3">
             <label for="phoneNumber" class="col-sm-2 col-form-label">Phone Number:</label>
             <div class="col-sm-10">
                 <input type="text" id="phoneNumber" th:field="*{phoneNumber}" class="form-control"/>
             </div>
         </div>
 
-        <div class="form-group row m-2">
+        <!-- P.O. Box -->
+        <div class="form-group row mb-3">
             <label for="poBox" class="col-sm-2 col-form-label">P.O. Box:</label>
             <div class="col-sm-10">
                 <input type="text" id="poBox" th:field="*{poBox}" class="form-control"/>
             </div>
         </div>
 
-        <div class="form-group row m-2">
+        <!-- Age -->
+        <div class="form-group row mb-3">
             <label for="age" class="col-sm-2 col-form-label">Age:</label>
             <div class="col-sm-10">
                 <input type="number" id="age" th:field="*{age}" class="form-control"/>
             </div>
         </div>
 
-        <div class="form-group row m-2">
+        <!-- Occupation -->
+        <div class="form-group row mb-3">
             <label for="occupation" class="col-sm-2 col-form-label">Occupation:</label>
             <div class="col-sm-10">
                 <input type="text" id="occupation" th:field="*{occupation}" class="form-control"/>
             </div>
         </div>
 
-        <div class="form-group row m-2">
+        <!-- Image Upload -->
+        <div class="form-group row mb-3">
             <label for="imageFiles" class="col-sm-2 col-form-label">Upload Images:</label>
             <div class="col-sm-10">
-                <input type="file" id="imageFiles" name="imageFiles" class="form-control-file btn btn-outline-primary" multiple>
+                <input type="file" id="imageFiles" name="imageFiles" class="form-control btn btn-outline-primary" multiple>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Add Client</button>
+        <!-- Submit Button -->
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">Add Client</button>
+        </div>
     </form>
 </div>
 </body>

@@ -1,11 +1,13 @@
 package com.project.optics.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.project.optics.exceptions.ClientNotFoundException;
+import com.project.optics.exceptions.ExamNotFoundException;
 import com.project.optics.models.Exam;
 import com.project.optics.models.Client;
 import com.project.optics.repositories.ExamRepository;
 import com.project.optics.repositories.ClientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
@@ -21,50 +23,34 @@ public class ExamService {
         this.clientRepository = clientRepository;
     }
 
-
     public Exam getExamById(Long id) {
-        return examRepository.findById(id).orElse(null);
+        return examRepository.findById(id)
+                .orElseThrow(() -> new ExamNotFoundException(id));
     }
-    public Exam addExam(Exam exam, Long clientId) {
-        Client client = clientRepository.findById(clientId).orElseThrow(() -> new RuntimeException("Client not found"));
-        exam.setClient(client); // Associate the exam with the client
+
+    public Long getClientIdByExamId(Long examId) {
+        return getExamById(examId).getClient().getId();
+    }
+
+    public void addExam(Exam exam, Long clientId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ClientNotFoundException(clientId));
+        exam.setClient(client);
         exam.setDateLastExam(LocalDate.now());
-        return examRepository.save(exam);
+        examRepository.save(exam);
     }
 
-    public Exam updateExam(Exam exam) {
-        // Find the existing exam and update its details
-        Exam existingExam = examRepository.findById(exam.getId()).orElseThrow(() -> new RuntimeException("Exam not found"));
-        exam.setClient(existingExam.getClient());
-        existingExam.setDateLastExam(exam.getDateLastExam());
+    public void updateExam(Exam exam) {
+        Exam existingExam = getExamById(exam.getId());
 
-        existingExam.setOdSph(exam.getOdSph());
-        existingExam.setOsSph(exam.getOsSph());
-
-        existingExam.setOdCyl(exam.getOdCyl());
-        existingExam.setOsCyl(exam.getOsCyl());
-
-        existingExam.setOdAxis(exam.getOdAxis());
-        existingExam.setOsAxis(exam.getOsAxis());
-
-        existingExam.setOdAdd(exam.getOdAdd());
-        existingExam.setOsAdd(exam.getOsAdd());
-
-        existingExam.setOdLens(exam.getOdLens());
-        existingExam.setOsLens(exam.getOsLens());
-
-
-        existingExam.setOdVa(exam.getOdVa());
-        existingExam.setOsVa(exam.getOsVa());
-
-        existingExam.setContactLens(exam.getContactLens());
-        existingExam.setIpd(exam.getIpd());
-        existingExam.setKReading(exam.getKReading());
-        return examRepository.save(existingExam);
+        existingExam.updateExamDetails(exam);
+        examRepository.save(existingExam);
     }
 
-    public void deleteExam(Exam exam) {
-        examRepository.deleteById(exam.getId());
+    public void deleteExamById(Long examId) {
+        if (!examRepository.existsById(examId)) {
+            throw new ExamNotFoundException(examId);
+        }
+        examRepository.deleteById(examId);
     }
 }
-

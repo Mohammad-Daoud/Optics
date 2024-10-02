@@ -37,5 +37,49 @@ public class Exam {
     private String kReading;
     private String contactLens;
     private String ipd;
+
+    public void updateExamDetails(Exam updatedExam) {
+        this.odSph = updatedExam.getOdSph();
+        this.odCyl = updatedExam.getOdCyl();
+        this.odAxis = updatedExam.getOdAxis();
+        this.odAdd = updatedExam.getOdAdd();
+        this.odLens = updatedExam.getOdLens();
+        this.odVa = updatedExam.getOdVa();
+
+        this.osSph = updatedExam.getOsSph();
+        this.osCyl = updatedExam.getOsCyl();
+        this.osAxis = updatedExam.getOsAxis();
+        this.osAdd = updatedExam.getOsAdd();
+        this.osLens = updatedExam.getOsLens();
+        this.osVa = updatedExam.getOsVa();
+
+        this.kReading = updatedExam.getKReading();
+        this.contactLens = updatedExam.getContactLens();
+        this.ipd = updatedExam.getIpd();
+    }
+
+    @Override
+    public String toString() {
+        return "Exam{" +
+                "id=" + id +
+                ", client=" + client +
+                ", dateLastExam=" + dateLastExam +
+                ", odSph='" + odSph + '\'' +
+                ", odCyl='" + odCyl + '\'' +
+                ", odAxis='" + odAxis + '\'' +
+                ", odAdd='" + odAdd + '\'' +
+                ", odLens='" + odLens + '\'' +
+                ", odVa='" + odVa + '\'' +
+                ", osSph='" + osSph + '\'' +
+                ", osCyl='" + osCyl + '\'' +
+                ", osAxis='" + osAxis + '\'' +
+                ", osAdd='" + osAdd + '\'' +
+                ", osLens='" + osLens + '\'' +
+                ", osVa='" + osVa + '\'' +
+                ", kReading='" + kReading + '\'' +
+                ", contactLens='" + contactLens + '\'' +
+                ", ipd='" + ipd + '\'' +
+                '}';
+    }
 }
 
