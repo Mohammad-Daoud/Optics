@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Admin Actions</title>
+  <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
+  <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
+  <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+  <th:block th:include="header :: header"></th:block>
+
+</head>
+<body>
+
+<div class="container mt-4">
+  <h1 class="mb-3">Admin Actions</h1>
+
+  <!-- Change Password Section -->
+  <h3>Change Password</h3>
+  <a href="/change-password" class="btn btn-outline-primary mb-3">Change Password</a>
+
+  <!-- Backup and Restore Section -->
+  <h3>Database Backup and Restore</h3>
+  <div class="mb-3">
+    <form th:action="@{/backup-db}" method="post" onsubmit="showBackupSuccessModal(); return false;">
+      <button type="submit" class="btn btn-outline-success">Backup Database</button>
+    </form>
+  </div>
+  <div class="mb-3">
+    <form th:action="@{/restore-db}" method="post" enctype="multipart/form-data" onsubmit="showRestoreWarningModal(); return false;">
+      <input type="file" name="dbFile" class="form-control-file mb-3" required>
+      <button type="submit" class="btn btn-outline-warning">Restore Database</button>
+    </form>
+  </div>
+</div>
+
+<!-- Backup Success Modal -->
+<div class="modal fade" id="backupSuccessModal" tabindex="-1" aria-labelledby="backupSuccessModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="backupSuccessModalLabel">Backup Successful</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Database backup has been completed successfully!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Restore Warning Modal -->
+<div class="modal fade" id="restoreWarningModal" tabindex="-1" aria-labelledby="restoreWarningModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="restoreWarningModalLabel">Restore Warning</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Restoring the database will shut down the system. Please reopen it after the restore process.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal" onclick="submitRestoreForm();">Proceed</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showBackupSuccessModal() {
+    $('#backupSuccessModal').modal('show');
+  }
+
+  function showRestoreWarningModal() {
+    $('#restoreWarningModal').modal('show');
+  }
+
+  function submitRestoreForm() {
+    document.querySelector('form[onsubmit="showRestoreWarningModal(); return false;"]').submit();
+  }
+</script>
+
+</body>
+</html>

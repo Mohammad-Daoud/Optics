@@ -9,11 +9,11 @@
   <style>
     .image-container {
       position: relative;
-      display: inline-block;
-      margin: 10px;
+      margin-bottom: 15px;
     }
     .image-container img {
-      max-width: 200px;
+      max-width: 100%;
+      height: auto;
     }
     .delete-button {
       position: absolute;
@@ -39,14 +39,19 @@
   <div th:if="${client.imageUrls != null && !client.imageUrls.isEmpty()}">
     <h3>Current Images</h3>
     <div class="row">
-      <div class="col-12 d-flex flex-wrap" th:each="imageUrl : ${client.imageUrls}">
-        <div class="image-container">
-          <img th:src="${imageUrl}" class="img-thumbnail"/>
-          <form th:action="@{/clients/images/delete}" method="post" class="d-inline">
-            <input type="hidden" name="id" th:value="${client.id}"/>
-            <input type="hidden" name="imageUrl" th:value="${imageUrl}"/>
-            <button type="submit" class="delete-button">Delete</button>
-          </form>
+      <!-- Image Grid -->
+      <div class="col-12 d-flex flex-wrap">
+        <div class="row g-3">
+          <div class="col-md-3 col-sm-4 col-xs-6" th:each="imageUrl : ${client.imageUrls}">
+            <div class="image-container">
+              <img th:src="${imageUrl}" class="img-thumbnail"/>
+              <form th:action="@{/clients/images/delete}" method="post" class="d-inline">
+                <input type="hidden" name="id" th:value="${client.id}"/>
+                <input type="hidden" name="imageUrl" th:value="${imageUrl}"/>
+                <button type="submit" class="delete-button">Delete</button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>

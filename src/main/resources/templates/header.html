@@ -10,19 +10,30 @@
     <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 <body>
-<header>
+<header class="container">
+    <div class="d-flex justify-content-between m-3">
+        <!-- Admin Actions button -->
+        <a th:href="@{/admin-actions}" class="btn btn-warning btn-sm">Admin Actions</a>
+
+        <!-- Logout button -->
+        <a th:href="@{/logout}" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+
+    <!-- Search form -->
     <form th:action="@{/search}" method="get"
-          class="row mt-3 gx-3 gy-2 align-items-center justify-content-center">
+          class="row mt-4 gx-3 gy-2 align-items-center justify-content-center">
         <div class="col-sm-6">
             <label for="query" class="visually-hidden">Search by name, phone, or ID</label>
             <input type="text" id="query" name="query" placeholder="Search by name, phone, or ID"
                    class="form-control form-control-sm border border-primary rounded" />
-
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-outline-primary btn-sm">Search</button>
         </div>
     </form>
 </header>
+
+<!-- Include Bootstrap JS and its dependencies -->
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
