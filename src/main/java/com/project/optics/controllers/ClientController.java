@@ -41,14 +41,19 @@ public class ClientController {
     }
 
     @PostMapping("/add")
-    public String addClient(@ModelAttribute("client") @Valid Client client,
-                            @RequestParam("imageFiles") MultipartFile[] imageFiles,
-                            BindingResult result) throws IOException {
-        if (result.hasErrors()) {
-            return "add-client";
+    public String addClient(@ModelAttribute("client") @Valid Client client, BindingResult result, Model model) {
+
+        // Check if a client with the same name combination already exists
+        if (clientService.clientExists(client.getFirstName(), client.getSecondName(), client.getThirdName(), client.getLastName())) {
+            result.rejectValue("firstName", "error.client", "A client with a similar name already exists.");
         }
+
+        if (result.hasErrors()) {
+            return "add-client";  // Return to the form if validation fails
+        }
+
         clientService.addClient(client);
-        return "redirect:/clients/view?id=" + client.getId();
+        return "redirect:/clients";
     }
 
     @GetMapping("/view")

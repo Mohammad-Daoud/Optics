@@ -2,12 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Edit Exam</title>
+
   <!-- Include Bootstrap CSS -->
   <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
 
+  <!-- Include jQuery and Bootstrap JS -->
   <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
   <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
   <th:block th:include="header :: header"></th:block>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -41,12 +44,20 @@
     .modal .modal-body {
       padding: 20px;
     }
+
+    .error-message {
+      color: red;
+    }
   </style>
 </head>
 <body>
 <div class="container mt-4">
   <h1 class="mb-3">Edit Exam</h1>
-  <form th:action="@{/exams/edit}" th:object="${exam}" method="post">
+
+  <!-- Error message container -->
+  <div id="errorMessages" class="alert alert-danger" style="display: none;"></div>
+
+  <form id="editExamForm" th:action="@{/exams/edit}" th:object="${exam}" method="post" onsubmit="return validateEditExamForm();">
     <input type="hidden" th:field="*{id}"/>
 
     <!-- Flexbox container for tables -->
@@ -67,20 +78,20 @@
         <tbody>
         <tr>
           <td>OD</td>
-          <td><input type="text" th:field="*{odSph}" class="form-control form-control-sm"/></td>
-          <td><input type="text" th:field="*{odCyl}" class="form-control form-control-sm"/></td>
-          <td><input type="text" th:field="*{odAxis}" class="form-control form-control-sm"/></td>
-          <td><input type="text" th:field="*{odAdd}" class="form-control form-control-sm"/></td>
-          <td><input type="text" th:field="*{odVa}" class="form-control form-control-sm"/></td>
+          <td><input type="text" id="odSph" th:field="*{odSph}" class="form-control form-control-sm"/></td>
+          <td><input type="text" id="odCyl" th:field="*{odCyl}" class="form-control form-control-sm"/></td>
+          <td><input type="number" id="odAxis" th:field="*{odAxis}" class="form-control form-control-sm" min="0" max="180"/></td>
+          <td><input type="text" id="odAdd" th:field="*{odAdd}" class="form-control form-control-sm"/></td>
+          <td><input type="number" id="odVa" th:field="*{odVa}" class="form-control form-control-sm" min="40" max="70"/></td>
           <td><input type="text" th:field="*{odLens}" class="form-control form-control-sm"/></td>
         </tr>
         <tr>
           <td>OS</td>
-          <td><input type="text" th:field="*{osSph}" class="form-control form-control-sm"/></td>
-          <td><input type="text" th:field="*{osCyl}" class="form-control form-control-sm"/></td>
-          <td><input type="text" th:field="*{osAxis}" class="form-control form-control-sm"/></td>
-          <td><input type="text" th:field="*{osAdd}" class="form-control form-control-sm"/></td>
-          <td><input type="text" th:field="*{osVa}" class="form-control form-control-sm"/></td>
+          <td><input type="text" id="osSph" th:field="*{osSph}" class="form-control form-control-sm"/></td>
+          <td><input type="text" id="osCyl" th:field="*{osCyl}" class="form-control form-control-sm"/></td>
+          <td><input type="number" id="osAxis" th:field="*{osAxis}" class="form-control form-control-sm" min="0" max="180"/></td>
+          <td><input type="text" id="osAdd" th:field="*{osAdd}" class="form-control form-control-sm"/></td>
+          <td><input type="number" id="osVa" th:field="*{osVa}" class="form-control form-control-sm" min="40" max="70"/></td>
           <td><input type="text" th:field="*{osLens}" class="form-control form-control-sm"/></td>
         </tr>
         </tbody>
@@ -130,8 +141,8 @@
         </thead>
         <tbody>
         <tr>
-          <td><input type="text" th:field="*{contactLens}" class="form-control form-control-sm"/></td>
-          <td><input type="text" th:field="*{ipd}" class="form-control form-control-sm"/></td>
+          <td><input type="text" id="contactLens" th:field="*{contactLens}" class="form-control form-control-sm"/></td>
+          <td><input type="number" id="ipd" th:field="*{ipd}" class="form-control form-control-sm" min="40" max="70"/></td>
         </tr>
         </tbody>
       </table>
@@ -145,8 +156,55 @@
 </div>
 
 <script>
+  function validateEditExamForm() {
+    let isValid = true;
+    let errors = [];
+
+    // Check Sph/Cyl/Add/CL values must be multiples of 0.25
+    const valuesToCheck = ['odSph', 'odCyl', 'odAdd', 'osSph', 'osCyl', 'osAdd', 'contactLens'];
+    valuesToCheck.forEach(id => {
+      const value = parseFloat(document.getElementById(id).value);
+      if (isNaN(value) || value % 0.25 !== 0) {
+        errors.push(`${id} must be a multiple of 0.25 (e.g., 0.25, 0.50, 0.75, etc.)`);
+        isValid = false;
+      }
+    });
+
+    // Axis values must be between 0 and 180
+    const axisValues = ['odAxis', 'osAxis'];
+    axisValues.forEach(id => {
+      const value = parseInt(document.getElementById(id).value);
+      if (isNaN(value) || value < 0 || value > 180) {
+        errors.push(`${id} must be between 0 and 180`);
+        isValid = false;
+      }
+    });
+
+    // IPD and VA values must be between 40 and 70
+    const rangeValues = ['odVa', 'osVa', 'ipd'];
+    rangeValues.forEach(id => {
+      const value = parseInt(document.getElementById(id).value);
+      if (isNaN(value) || value < 40 || value > 70) {
+        errors.push(`${id} must be between 40 and 70`);
+        isValid = false;
+      }
+    });
+
+    if (!isValid) {
+      const errorMessagesDiv = document.getElementById('errorMessages');
+      errorMessagesDiv.innerHTML = errors.join('<br/>');
+      errorMessagesDiv.style.display = 'block';
+    }
+
+    return isValid;
+  }
+
   function saveKReading() {
-    var modal = bootstrap.Modal.getInstance(document.getElementById('kReadingModal'));
+    const kReadingDetails = document.getElementById('kReadingTextarea').value;
+    document.getElementById('kReading').value = kReadingDetails;
+
+    // Close the modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('kReadingModal'));
     modal.hide();
   }
 </script>

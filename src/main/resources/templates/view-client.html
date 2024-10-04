@@ -13,16 +13,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        /* Set max-height and max-width for images */
-        .carousel-item img {
-            max-height: 100%; /* Full viewport height */
-            width: 100%;       /* Full width */
-            object-fit: contain; /* Maintain aspect ratio */
-        }
-    </style>
+
 </head>
-<body class="container mb-4">
+<body>
 <div class="container mt-4">
     <h1 class="mb-3">Client Information</h1>
     <div class="row mb-3">
@@ -104,7 +97,7 @@
     </div>
 </div>
 
-<div class="mt-4">
+<div class="container mt-4">
     <h2>Exams</h2>
     <a th:href="@{/exams/add(id=${client.id})}" class="btn btn-primary mb-3">Add New Exam</a>
 

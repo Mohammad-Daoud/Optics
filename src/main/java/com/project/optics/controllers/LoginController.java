@@ -146,4 +146,10 @@ public class LoginController {
         }
         return "admin-actions";
     }
+
+    @GetMapping("/exit")
+    public void exit(HttpSession session) {
+        session.invalidate();
+        System.exit(0);
+    }
 }

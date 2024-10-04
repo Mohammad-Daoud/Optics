@@ -95,6 +95,12 @@
             <version>0.50</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>popper.js</artifactId>
+            <version>2.11.7</version>
+        </dependency>
+
     </dependencies>
 
     <build>

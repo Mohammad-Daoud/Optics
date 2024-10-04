@@ -3,15 +3,12 @@
 <head>
   <title>Edit Client</title>
   <th:block th:include="header :: header"></th:block>
-  <!-- Include Bootstrap CSS -->
   <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
-
   <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
   <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    /* Additional CSS for better spacing and clarity */
     .form-group {
       margin-bottom: 1rem;
     }
@@ -24,8 +21,17 @@
 <div class="container mt-4">
   <h1 class="mb-3">Edit Client</h1>
 
-  <form th:action="@{/clients/edit}" th:object="${client}" method="post" enctype="multipart/form-data" class="needs-validation">
+  <!-- Error message -->
+  <div id="error-message" class="alert alert-danger" style="display:none;"></div>
+
+  <form id="edit-client-form" th:action="@{/clients/edit}" th:object="${client}" method="post" enctype="multipart/form-data" class="needs-validation">
     <input type="hidden" th:field="*{id}"/>
+
+    <!-- Original Names (for comparison) -->
+    <input type="hidden" id="originalFirstName" th:value="${client.firstName}">
+    <input type="hidden" id="originalSecondName" th:value="${client.secondName}">
+    <input type="hidden" id="originalThirdName" th:value="${client.thirdName}">
+    <input type="hidden" id="originalLastName" th:value="${client.lastName}">
 
     <!-- First Name -->
     <div class="form-group row">
@@ -108,11 +114,63 @@
     </div>
 
     <!-- Save Button -->
-    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
     <a href="/clients/view?id=" th:href="@{/clients/view(id=${client.id})}" class="btn btn-outline-primary mt-3">Back to Client Details</a>
   </form>
 
   <!-- Back to Client Details -->
 </div>
+
+<script>
+  document.getElementById("edit-client-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+    validateClientName();
+  });
+
+  function validateClientName() {
+    const firstName = document.getElementById("firstName").value;
+    const secondName = document.getElementById("secondName").value;
+    const thirdName = document.getElementById("thirdName").value;
+    const lastName = document.getElementById("lastName").value;
+
+    const originalFirstName = document.getElementById("originalFirstName").value;
+    const originalSecondName = document.getElementById("originalSecondName").value;
+    const originalThirdName = document.getElementById("originalThirdName").value;
+    const originalLastName = document.getElementById("originalLastName").value;
+
+    // Check if the name has changed
+    if (
+            firstName === originalFirstName &&
+            secondName === originalSecondName &&
+            thirdName === originalThirdName &&
+            lastName === originalLastName
+    ) {
+      // Name hasn't changed, submit the form
+      submitForm();
+    } else {
+      // Name has changed, validate for uniqueness
+      fetch(`/api/clients/check-client-name?firstName=${firstName}&secondName=${secondName}&thirdName=${thirdName}&lastName=${lastName}`)
+              .then(response => response.json())
+              .then(data => {
+                if (data) {
+                  // Show error message if client exists
+                  const errorMessageDiv = document.getElementById("error-message");
+                  errorMessageDiv.style.display = "block";
+                  errorMessageDiv.innerText = "A client with the same name already exists.";
+                } else {
+                  submitForm();
+                }
+              })
+              .catch(error => {
+                console.error("Error checking client name:", error);
+              });
+    }
+  }
+
+  function submitForm() {
+    const form = document.getElementById("saveChangesBtn");
+    form.click();
+  }
+</script>
 </body>
 </html>

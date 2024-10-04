@@ -37,13 +37,20 @@
         .form-table th {
             background-color: #f2f2f2;
         }
+
+        .error-message {
+            color: red;
+        }
     </style>
 </head>
 <body>
 <div class="container mt-4">
     <h1 class="mb-3">Add an Exam for Client</h1>
 
-    <form th:action="@{/exams/add(id=${client.id})}" th:object="${exam}" method="post">
+    <!-- Error message container -->
+    <div id="errorMessages" class="alert alert-danger" style="display: none;"></div>
+
+    <form id="examForm" th:action="@{/exams/add(id=${client.id})}" th:object="${exam}" method="post" onsubmit="return validateForm();">
 
         <!-- Hidden field for K.Reading -->
         <input type="hidden" name="kReading" th:field="*{kReading}">
@@ -86,21 +93,21 @@
                 <tbody>
                 <tr>
                     <td>OD</td>
-                    <td><input type="text" th:field="*{odSph}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{odCyl}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{odAxis}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{odAdd}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{odVa}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{odLens}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" id="odSph" class="form-control form-control-sm"/></td>
+                    <td><input type="text" id="odCyl" class="form-control form-control-sm"/></td>
+                    <td><input type="number" id="odAxis" class="form-control form-control-sm" min="0" max="180"/></td>
+                    <td><input type="text" id="odAdd" class="form-control form-control-sm"/></td>
+                    <td><input type="number" id="odVa" class="form-control form-control-sm" min="40" max="70"/></td>
+                    <td><input type="text" id="odLens" class="form-control form-control-sm"/></td>
                 </tr>
                 <tr>
                     <td>OS</td>
-                    <td><input type="text" th:field="*{osSph}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{osCyl}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{osAxis}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{osAdd}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{osVa}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{osLens}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" id="osSph" class="form-control form-control-sm"/></td>
+                    <td><input type="text" id="osCyl" class="form-control form-control-sm"/></td>
+                    <td><input type="number" id="osAxis" class="form-control form-control-sm" min="0" max="180"/></td>
+                    <td><input type="text" id="osAdd" class="form-control form-control-sm"/></td>
+                    <td><input type="number" id="osVa" class="form-control form-control-sm" min="40" max="70"/></td>
+                    <td><input type="text" id="osLens" class="form-control form-control-sm"/></td>
                 </tr>
                 </tbody>
             </table>
@@ -128,8 +135,8 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td><input type="text" th:field="*{contactLens}" class="form-control form-control-sm"/></td>
-                    <td><input type="text" th:field="*{ipd}" class="form-control form-control-sm"/></td>
+                    <td><input type="text" id="contactLens" class="form-control form-control-sm"/></td>
+                    <td><input type="number" id="ipd" class="form-control form-control-sm" min="40" max="70"/></td>
                 </tr>
                 </tbody>
             </table>
@@ -142,11 +149,52 @@
 </div>
 
 <script>
+    function validateForm() {
+        let isValid = true;
+        let errors = [];
+
+        // Check Sph/Cyl/Add/CL values must be multiples of 0.25
+        const valuesToCheck = ['odSph', 'odCyl', 'odAdd', 'osSph', 'osCyl', 'osAdd', 'contactLens'];
+        valuesToCheck.forEach(id => {
+            const value = parseFloat(document.getElementById(id).value);
+            if (isNaN(value) || value % 0.25 !== 0) {
+                errors.push(`${id} must be a multiple of 0.25 (e.g., 0.25, 0.50, 0.75, etc.)`);
+                isValid = false;
+            }
+        });
+
+        // Axis values must be between 0 and 180
+        const axisValues = ['odAxis', 'osAxis'];
+        axisValues.forEach(id => {
+            const value = parseInt(document.getElementById(id).value);
+            if (isNaN(value) || value < 0 || value > 180) {
+                errors.push(`${id} must be between 0 and 180`);
+                isValid = false;
+            }
+        });
+
+        // IPD and VA values must be between 40 and 70
+        const rangeValues = ['odVa', 'osVa', 'ipd'];
+        rangeValues.forEach(id => {
+            const value = parseInt(document.getElementById(id).value);
+            if (isNaN(value) || value < 40 || value > 70) {
+                errors.push(`${id} must be between 40 and 70`);
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            const errorMessagesDiv = document.getElementById('errorMessages');
+            errorMessagesDiv.innerHTML = errors.join('<br/>');
+            errorMessagesDiv.style.display = 'block';
+        }
+
+        return isValid;
+    }
+
     function saveKReading() {
         const kReadingDetails = document.getElementById('kReadingTextarea').value;
-
-        // Set the value in the hidden field for K.Reading in the form
-        document.querySelector('input[name="kReading"]').value = kReadingDetails;
+        document.getElementById('kReading').value = kReadingDetails;
 
         // Close the modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('kReadingModal'));

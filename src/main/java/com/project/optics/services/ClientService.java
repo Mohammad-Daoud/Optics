@@ -8,6 +8,7 @@ import com.project.optics.models.Client;
 import com.project.optics.repositories.ClientRepository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ClientService {
@@ -25,6 +26,15 @@ public class ClientService {
         return clientRepository.findAll(pageable);
     }
 
+    public boolean clientExists(String firstName, String secondName, String thirdName, String lastName) {
+        List<Client> similarClients = clientRepository.findSimilarClients(
+                firstName.trim(),
+                secondName != null ? secondName.trim() : null,
+                thirdName != null ? thirdName.trim() : null,
+                lastName.trim());
+
+        return !similarClients.isEmpty();
+    }
     public void addClient(Client client) {
         client.setDateOfCreation(LocalDate.now());
         clientRepository.save(client);

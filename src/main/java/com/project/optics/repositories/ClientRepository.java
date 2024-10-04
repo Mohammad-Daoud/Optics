@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ClientRepository extends JpaRepository<Client,Long> {
 
@@ -45,4 +47,13 @@ public interface ClientRepository extends JpaRepository<Client,Long> {
             "CAST(c.id AS string) LIKE CONCAT('%', :query, '%')")
     Page<Client> defaultSearch(@Param("query") String query, Pageable pageable);
 
+    @Query("SELECT c FROM Client c WHERE " +
+            "(:firstName IS NULL OR LOWER(c.firstName) = LOWER(:firstName)) AND " +
+            "(:secondName IS NULL OR LOWER(c.secondName) = LOWER(:secondName)) AND " +
+            "(:thirdName IS NULL OR LOWER(c.thirdName) = LOWER(:thirdName)) AND " +
+            "(:lastName IS NULL OR LOWER(c.lastName) = LOWER(:lastName))")
+    List<Client> findSimilarClients(@Param("firstName") String firstName,
+                                    @Param("secondName") String secondName,
+                                    @Param("thirdName") String thirdName,
+                                    @Param("lastName") String lastName);
 }
