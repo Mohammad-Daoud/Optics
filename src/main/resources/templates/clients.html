@@ -30,10 +30,11 @@
       <thead class="thead-dark">
       <tr>
         <th>ID</th>
-        <th>First Name</th>
+<!--        <th>First Name</th>
         <th>Second Name</th>
         <th>Third Name</th>
-        <th>Last Name</th>
+        <th>Last Name</th>-->
+        <th>Name</th>
         <th>Phone Number</th>
         <th>Actions</th>
       </tr>
@@ -41,10 +42,17 @@
       <tbody>
       <tr th:each="client : ${clientsPage.content}">
         <td th:text="${client.id}"></td>
-        <td th:text="${client.firstName}"></td>
+<!--        <td th:text="${client.firstName}"></td>
         <td th:text="${client.secondName}"></td>
         <td th:text="${client.thirdName}"></td>
         <td th:text="${client.lastName}"></td>
+        <td th:text="${client.phoneNumber}"></td>-->
+        <td>
+          <span th:text="${client.firstName}"></span>
+          <span th:if="${client.secondName != null and !client.secondName.isEmpty()}" th:text="' ' + ${client.secondName}"></span>
+          <span th:if="${client.thirdName != null and !client.thirdName.isEmpty()}" th:text="' ' + ${client.thirdName}"></span>
+          <span th:text="' ' + ${client.lastName}"></span>
+        </td>
         <td th:text="${client.phoneNumber}"></td>
         <td>
           <a th:href="@{/clients/view(id=${client.id})}" class="btn btn-sm btn-info m-1">View</a>
