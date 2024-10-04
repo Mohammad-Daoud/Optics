@@ -3,11 +3,17 @@ package com.project.optics.controllers;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileOutputStream;
@@ -91,29 +97,39 @@ public class LoginController {
 
     // Handle database backup
     @PostMapping("/backup-db")
-    public String backupDatabase() {
-        try {
-            Path backupPath = Paths.get("backup/opticsdb-backup.mv.db");
-            Files.copy(Paths.get("data/opticsdb.mv.db"), backupPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "redirect:/admin-actions?backupSuccess=true";
+    @ResponseBody
+    public ResponseEntity<Resource> backupDatabase() throws IOException {
+        // Path to backup location
+        Path backupPath = Paths.get("backup/opticsdb-backup.mv.db");
+
+        // Copy the database file to the backup location
+        Files.copy(Paths.get("data/opticsdb.mv.db"), backupPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+        // Prepare the resource for download
+        Resource fileResource = new PathResource(backupPath);
+
+        // Set the content-disposition header to trigger download
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=opticsdb-backup.mv.db");
+
+        // Return the file as a downloadable response
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(fileResource);
     }
 
     // Handle database restore
     @PostMapping("/restore-db")
-    public String restoreDatabase(@RequestParam("dbFile") MultipartFile dbFile, Model model) {
-        try {
-            Path restorePath = Paths.get("data/opticsdb.mv.db");
-            Files.copy(dbFile.getInputStream(), restorePath, StandardCopyOption.REPLACE_EXISTING);
+    public String restoreDatabase(@RequestParam("dbFile") MultipartFile dbFile, Model model) throws IOException {
 
-            // Simulate application restart after restore
-            model.addAttribute("restoreSuccess", true);
-            System.exit(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Path restorePath = Paths.get("data/opticsdb.mv.db");
+        Files.copy(dbFile.getInputStream(), restorePath, StandardCopyOption.REPLACE_EXISTING);
+
+        // Simulate application restart after restore
+        model.addAttribute("restoreSuccess", true);
+        System.exit(0);
+
         return "redirect:/admin-actions?restoreSuccess=true";
     }
 
@@ -134,7 +150,7 @@ public class LoginController {
             adminPassword = newPassword;
 
         } catch (IOException io) {
-            io.printStackTrace();
+            throw new RuntimeException(io);
         }
     }
 
