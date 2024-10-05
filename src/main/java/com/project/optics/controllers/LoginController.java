@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +31,7 @@ import java.util.Properties;
 @Controller
 public class LoginController {
 
+    private static final String PASSWORD_FILE = "data/p.txt";
     @Value("${admin.username}")
     private String adminUsername;
 
@@ -53,7 +52,7 @@ public class LoginController {
                         @RequestParam("password") String password,
                         HttpSession session,
                         Model model) {
-        if (adminUsername.equals(username) && adminPassword.equals(password)) {
+        if (adminUsername.equals(username) && checkPassword(password)) {
             session.setAttribute("loggedIn", true);
             return "redirect:/clients";
         } else {
@@ -62,6 +61,26 @@ public class LoginController {
         }
     }
 
+    private boolean checkPassword(String password) {
+        try {
+            // Check if the file exists
+            if (!Files.exists(Paths.get(PASSWORD_FILE))) {
+                // File does not exist, create it and set default password
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(PASSWORD_FILE))) {
+                    writer.write("admin");
+                }
+            }
+            String filePass = readPasswordFile();
+            return filePass.equals(password);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+    private static String readPasswordFile() throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(PASSWORD_FILE))) {
+            return reader.readLine();
+        }
+    }
     // Show password change page
     @GetMapping("/change-password")
     public String changePasswordPage(HttpSession session) {
@@ -78,7 +97,7 @@ public class LoginController {
                                  @RequestParam("confirmPassword") String confirmPassword,
                                  HttpSession session,
                                  Model model) {
-        if (!adminPassword.equals(currentPassword)) {
+        if (!checkPassword(currentPassword)) {
             model.addAttribute("error", "Current password is incorrect");
             return "change-password";
         }
@@ -166,20 +185,8 @@ public class LoginController {
 
     // Method to update the password in the properties file
     private void updatePasswordInProperties(String newPassword) {
-        Properties properties = new Properties();
-        try (OutputStream output = new FileOutputStream(PROPERTIES_FILE)) {
-            // Load existing properties
-            properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
-
-            // Update the password
-            properties.setProperty("admin.password", newPassword);
-
-            // Save the updated properties back to the file
-            properties.store(output, null);
-
-            // Update the in-memory password variable
-            adminPassword = newPassword;
-
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PASSWORD_FILE))) {
+            writer.write(newPassword);
         } catch (IOException io) {
             throw new RuntimeException(io);
         }
