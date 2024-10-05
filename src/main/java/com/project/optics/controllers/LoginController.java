@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 @Controller
@@ -95,28 +100,54 @@ public class LoginController {
         return "redirect:/login?logout";
     }
 
-    // Handle database backup
     @PostMapping("/backup-db")
     @ResponseBody
-    public ResponseEntity<Resource> backupDatabase() throws IOException {
-        // Path to backup location
-        Path backupPath = Paths.get("backup/opticsdb-backup.mv.db");
+    public ResponseEntity<Resource> backupDatabase() {
+        try {
+            // Perform the H2 database backup
+            String backupFilePath = performH2Backup();
 
-        // Copy the database file to the backup location
-        Files.copy(Paths.get("data/opticsdb.mv.db"), backupPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            // Prepare the headers for downloading the backup file
+            HttpHeaders headers = prepareDownloadHeaders("opticsdb-backup.zip");
 
-        // Prepare the resource for download
-        Resource fileResource = new PathResource(backupPath);
+            // Return the backup file as a downloadable response
+            Resource fileResource = new PathResource(backupFilePath);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(fileResource);
+        } catch (Exception e) {
+            // Handle any exception that occurs during backup
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);  // You can return a meaningful error response here
+        }
+    }
 
-        // Set the content-disposition header to trigger download
+    private String performH2Backup() throws SQLException, IOException {
+        // Path to the backup file
+        String backupFilePath = "backup/opticsdb-backup.zip";
+
+        // Ensure the backup directory exists
+        Path backupDirectory = Paths.get("backup");
+        if (!Files.exists(backupDirectory)) {
+            Files.createDirectories(backupDirectory);
+        }
+
+        // Backup the H2 database
+        String dbUrl = "jdbc:h2:file:./data/opticsdb;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE";  // Adjust your DB URL if necessary
+        Connection conn = DriverManager.getConnection(dbUrl, "root", "");  // Use appropriate credentials
+        Statement stmt = conn.createStatement();
+        stmt.execute("BACKUP TO '" + backupFilePath + "'");  // Use H2's backup command
+        stmt.close();
+        conn.close();
+
+        return backupFilePath;
+    }
+
+    private HttpHeaders prepareDownloadHeaders(String filename) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=opticsdb-backup.mv.db");
-
-        // Return the file as a downloadable response
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(fileResource);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+        return headers;
     }
 
     // Handle database restore
