@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.project.optics.models.Client;
 import com.project.optics.repositories.ClientRepository;
+import org.thymeleaf.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -67,6 +68,12 @@ public class ClientService {
     }
 
 
-
-
+    public String nameContainsSpaces(String ... names) {
+        for (String name : names) {
+            if (name != null && name.contains(" ")) {
+                return name;
+            }
+        }
+        return null;
+    }
 }

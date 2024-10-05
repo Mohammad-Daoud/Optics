@@ -45,7 +45,12 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h1 class="mb-3">Add an Exam for Client</h1>
+    <h1 class="mb-3">
+        <span th:text="'Add Exam for: '+${client.firstName}"></span>
+        <span th:if="${client.secondName != null and !client.secondName.isEmpty()}" th:text="' ' + ${client.secondName}"></span>
+        <span th:if="${client.thirdName != null and !client.thirdName.isEmpty()}" th:text="' ' + ${client.thirdName}"></span>
+        <span th:text="' ' + ${client.lastName}"></span>
+    </h1>
 
     <!-- Error message container -->
     <div id="errorMessages" class="alert alert-danger" style="display: none;"></div>

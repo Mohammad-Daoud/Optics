@@ -47,6 +47,10 @@ public class ClientController {
         if (clientService.clientExists(client.getFirstName(), client.getSecondName(), client.getThirdName(), client.getLastName())) {
             result.rejectValue("firstName", "error.client", "A client with a similar name already exists.");
         }
+        String namesError = clientService.nameContainsSpaces(client.getFirstName(), client.getSecondName(), client.getThirdName(), client.getLastName());
+        if (namesError != null) {
+            result.rejectValue("firstName", "error.client", "Input value \""+namesError+"\" should not contain spaces.");
+        }
 
         if (result.hasErrors()) {
             return "add-client";  // Return to the form if validation fails

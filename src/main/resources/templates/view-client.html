@@ -17,7 +17,12 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h1 class="mb-3">Client Information</h1>
+    <h1 class="mb-3">
+        <span th:text="${client.firstName}"></span>
+        <span th:if="${client.secondName != null and !client.secondName.isEmpty()}" th:text="' ' + ${client.secondName}"></span>
+        <span th:if="${client.thirdName != null and !client.thirdName.isEmpty()}" th:text="' ' + ${client.thirdName}"></span>
+        <span th:text="' ' + ${client.lastName}+' Information'"></span>
+    </h1>
     <div class="row mb-3">
         <div class="col-sm-4"><strong>ID:</strong></div>
         <div class="col-sm-8"><span th:text="${client.id}"></span></div>
@@ -52,7 +57,7 @@
         <div class="col-sm-4"><strong>Occupation:</strong></div>
         <div class="col-sm-8"><span th:text="${client.occupation}"></span></div>
     </div>
-</div>
+
 
 <!-- Modal for displaying full-size images -->
 <div th:if="${client.imageUrls != null && !client.imageUrls.isEmpty()}">
@@ -64,7 +69,7 @@
         </button>
     </div>
 </div>
-
+</div>
 <!-- Modal for Viewing Images with Carousel -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">

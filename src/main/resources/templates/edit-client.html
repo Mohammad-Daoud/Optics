@@ -15,14 +15,22 @@
     .btn-primary {
       margin-top: 1rem;
     }
+    .alert-danger {
+      display: none;
+    }
   </style>
 </head>
 <body>
 <div class="container mt-4">
-  <h1 class="mb-3">Edit Client</h1>
+  <h1 class="mb-3">
+    <span th:text="'Edit '+${client.firstName}"></span>
+    <span th:if="${client.secondName != null and !client.secondName.isEmpty()}" th:text="' ' + ${client.secondName}"></span>
+    <span th:if="${client.thirdName != null and !client.thirdName.isEmpty()}" th:text="' ' + ${client.thirdName}"></span>
+    <span th:text="' ' + ${client.lastName}+' Information'"></span>
+  </h1>
 
   <!-- Error message -->
-  <div id="error-message" class="alert alert-danger" style="display:none;"></div>
+  <div id="error-message" class="alert alert-danger"></div>
 
   <form id="edit-client-form" th:action="@{/clients/edit}" th:object="${client}" method="post" enctype="multipart/form-data" class="needs-validation">
     <input type="hidden" th:field="*{id}"/>
@@ -133,6 +141,13 @@
     const thirdName = document.getElementById("thirdName").value;
     const lastName = document.getElementById("lastName").value;
 
+    // Check if any of the names contain spaces
+    const errorMessage = checkSpacesInNames(firstName, secondName, thirdName, lastName);
+    if (errorMessage !== null) {
+      showErrorMessage(`Input value "${errorMessage}" should not contain spaces.`);
+      return;
+    }
+
     const originalFirstName = document.getElementById("originalFirstName").value;
     const originalSecondName = document.getElementById("originalSecondName").value;
     const originalThirdName = document.getElementById("originalThirdName").value;
@@ -145,7 +160,6 @@
             thirdName === originalThirdName &&
             lastName === originalLastName
     ) {
-      // Name hasn't changed, submit the form
       submitForm();
     } else {
       // Name has changed, validate for uniqueness
@@ -153,10 +167,7 @@
               .then(response => response.json())
               .then(data => {
                 if (data) {
-                  // Show error message if client exists
-                  const errorMessageDiv = document.getElementById("error-message");
-                  errorMessageDiv.style.display = "block";
-                  errorMessageDiv.innerText = "A client with the same name already exists.";
+                  showErrorMessage("A client with the same name already exists.");
                 } else {
                   submitForm();
                 }
@@ -165,6 +176,28 @@
                 console.error("Error checking client name:", error);
               });
     }
+  }
+
+  function checkSpacesInNames(firstName, secondName, thirdName, lastName) {
+    if (firstName.includes(' ')) {
+      return firstName;
+    }
+    if (secondName.includes(' ')) {
+      return secondName;
+    }
+    if (thirdName.includes(' ')) {
+      return thirdName;
+    }
+    if (lastName.includes(' ')) {
+      return lastName;
+    }
+    return null;
+  }
+
+  function showErrorMessage(message) {
+    const errorMessageDiv = document.getElementById("error-message");
+    errorMessageDiv.style.display = "block";
+    errorMessageDiv.innerText = message;
   }
 
   function submitForm() {
