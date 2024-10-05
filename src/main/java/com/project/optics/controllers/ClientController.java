@@ -1,6 +1,7 @@
 package com.project.optics.controllers;
 
 import com.project.optics.models.Client;
+import com.project.optics.services.ClientImageService;
 import com.project.optics.services.ClientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +14,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/clients")
 public class ClientController {
 
     private final ClientService clientService;
-
+    private final ClientImageService clientImageService;
     @Autowired
-    public ClientController(ClientService clientService) {
+    public ClientController(ClientService clientService, ClientImageService clientImageService) {
         this.clientService = clientService;
+        this.clientImageService = clientImageService;
     }
 
     @GetMapping
@@ -41,7 +44,8 @@ public class ClientController {
     }
 
     @PostMapping("/add")
-    public String addClient(@ModelAttribute("client") @Valid Client client, BindingResult result, Model model) {
+    public String addClient(@ModelAttribute("client") @Valid Client client, BindingResult result,
+                            @RequestParam("imageFiles") List<MultipartFile> imageFiles) throws IOException {
 
         // Check if a client with the same name combination already exists
         if (clientService.clientExists(client.getFirstName(), client.getSecondName(), client.getThirdName(), client.getLastName())) {
@@ -57,6 +61,7 @@ public class ClientController {
         }
 
         clientService.addClient(client);
+        clientImageService.addImages(client.getId(), imageFiles);
         return "redirect:/clients";
     }
 
