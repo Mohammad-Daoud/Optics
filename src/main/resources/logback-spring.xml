@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Console Appender to display logs in the console -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Rolling File Appender to write logs to the file with rotation -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Define log file location -->
+        <file>logs/optics.log</file>
+
+        <!-- Rolling policy: Rotate logs daily or when they reach 10MB -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Include %d for date and %i for the file index -->
+            <fileNamePattern>logs/optics.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>5</maxHistory> <!-- Keep up to 5 log files -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root logger: Logs everything at INFO level and above -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/> <!-- Log to console -->
+        <appender-ref ref="FILE"/> <!-- Log to file -->
+    </root>
+
+    <!-- Adjust logging level for specific packages if needed -->
+    <logger name="com.project.optics" level="DEBUG"/>
+</configuration>
