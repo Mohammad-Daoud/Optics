@@ -1,12 +1,12 @@
 package com.project.optics.controllers;
 
-import jakarta.annotation.PostConstruct;
+import com.project.optics.services.FileService;
+import com.project.optics.services.DatabaseService;
+import com.project.optics.services.PasswordService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,102 +17,68 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.nio.file.Files;
+import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Properties;
 
 @Controller
 public class LoginController {
 
-    private static final String PASSWORD_FILE = "data/p.txt";
+    private final PasswordService passwordService;
+    private final FileService fileService;
+    private final DatabaseService databaseService;
+
     @Value("${admin.username}")
     private String adminUsername;
 
-    @Value("${admin.password}")
-    private String adminPassword;
+    public LoginController(PasswordService passwordService, FileService fileService, DatabaseService databaseService) {
+        this.passwordService = passwordService;
+        this.fileService = fileService;
+        this.databaseService = databaseService;
+    }
 
-    private static final String PROPERTIES_FILE = "src/main/resources/application.properties";
-
-    // Show login page
     @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
 
-    // Handle login form submission
     @PostMapping("/login")
     public String login(@RequestParam("username") String username,
                         @RequestParam("password") String password,
-                        HttpSession session,
-                        Model model) {
-        if (adminUsername.equals(username) && checkPassword(password)) {
+                        HttpSession session, Model model) {
+        if (adminUsername.equals(username) && passwordService.isValidPassword(password)) {
             session.setAttribute("loggedIn", true);
             return "redirect:/clients";
-        } else {
-            model.addAttribute("error", "Invalid credentials");
-            return "login";
         }
+        model.addAttribute("error", "Invalid credentials");
+        return "login";
     }
 
-    private boolean checkPassword(String password) {
-        try {
-            // Check if the file exists
-            if (!Files.exists(Paths.get(PASSWORD_FILE))) {
-                // File does not exist, create it and set default password
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(PASSWORD_FILE))) {
-                    writer.write("admin");
-                }
-            }
-            String filePass = readPasswordFile();
-            return filePass.equals(password);
-        } catch (IOException e) {
-            return false;
-        }
-    }
-    private static String readPasswordFile() throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(PASSWORD_FILE))) {
-            return reader.readLine();
-        }
-    }
-    // Show password change page
     @GetMapping("/change-password")
     public String changePasswordPage(HttpSession session) {
-        if (session.getAttribute("loggedIn") == null) {
+        if (!isLoggedIn(session)) {
             return "redirect:/login";
         }
         return "change-password";
     }
 
-    // Handle password change
     @PostMapping("/change-password")
     public String changePassword(@RequestParam("currentPassword") String currentPassword,
                                  @RequestParam("newPassword") String newPassword,
                                  @RequestParam("confirmPassword") String confirmPassword,
-                                 HttpSession session,
-                                 Model model) {
-        if (!checkPassword(currentPassword)) {
+                                 HttpSession session, Model model) {
+        if (!passwordService.isValidPassword(currentPassword)) {
             model.addAttribute("error", "Current password is incorrect");
             return "change-password";
         }
-
         if (!newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "New passwords do not match");
             return "change-password";
         }
-
-        updatePasswordInProperties(newPassword);
+        passwordService.updatePassword(newPassword);
         model.addAttribute("success", "Password changed successfully");
         return "change-password";
     }
 
-    // Handle logout
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
@@ -123,79 +89,33 @@ public class LoginController {
     @ResponseBody
     public ResponseEntity<Resource> backupDatabase() {
         try {
-            // Perform the H2 database backup
-            String backupFilePath = performH2Backup();
-
-            // Prepare the headers for downloading the backup file
-            HttpHeaders headers = prepareDownloadHeaders("opticsdb-backup.zip");
-
-            // Return the backup file as a downloadable response
-            Resource fileResource = new PathResource(backupFilePath);
+            Path backupFile = databaseService.performBackup();
+            HttpHeaders headers = fileService.prepareDownloadHeaders("opticsdb-backup.zip");
+            Resource fileResource = fileService.loadFileAsResource(backupFile);
             return ResponseEntity.ok()
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(fileResource);
         } catch (Exception e) {
-            // Handle any exception that occurs during backup
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);  // You can return a meaningful error response here
+            return ResponseEntity.internalServerError().build();
         }
     }
 
-    private String performH2Backup() throws SQLException, IOException {
-        // Path to the backup file
-        String backupFilePath = "backup/opticsdb-backup.zip";
-
-        // Ensure the backup directory exists
-        Path backupDirectory = Paths.get("backup");
-        if (!Files.exists(backupDirectory)) {
-            Files.createDirectories(backupDirectory);
-        }
-
-        // Backup the H2 database
-        String dbUrl = "jdbc:h2:file:./data/opticsdb;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE";  // Adjust your DB URL if necessary
-        Connection conn = DriverManager.getConnection(dbUrl, "root", "");  // Use appropriate credentials
-        Statement stmt = conn.createStatement();
-        stmt.execute("BACKUP TO '" + backupFilePath + "'");  // Use H2's backup command
-        stmt.close();
-        conn.close();
-
-        return backupFilePath;
-    }
-
-    private HttpHeaders prepareDownloadHeaders(String filename) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
-        return headers;
-    }
-
-    // Handle database restore
     @PostMapping("/restore-db")
-    public String restoreDatabase(@RequestParam("dbFile") MultipartFile dbFile, Model model) throws IOException {
-
-        Path restorePath = Paths.get("data/opticsdb.mv.db");
-        Files.copy(dbFile.getInputStream(), restorePath, StandardCopyOption.REPLACE_EXISTING);
-
-        // Simulate application restart after restore
-        model.addAttribute("restoreSuccess", true);
-        System.exit(0);
-
+    public String restoreDatabase(@RequestParam("dbFile") MultipartFile dbFile, Model model) {
+        try {
+            databaseService.restoreDatabase(dbFile);
+            model.addAttribute("restoreSuccess", true);
+            System.exit(0); // Simulate application restart
+        } catch (IOException e) {
+            model.addAttribute("error", "Failed to restore database.");
+        }
         return "redirect:/admin-actions?restoreSuccess=true";
     }
 
-    // Method to update the password in the properties file
-    private void updatePasswordInProperties(String newPassword) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PASSWORD_FILE))) {
-            writer.write(newPassword);
-        } catch (IOException io) {
-            throw new RuntimeException(io);
-        }
-    }
-
-    // Show admin actions page
     @GetMapping("/admin-actions")
     public String showAdminActions(HttpSession session, Model model) {
-        if (session.getAttribute("loggedIn") == null) {
+        if (!isLoggedIn(session)) {
             return "redirect:/login";
         }
         return "admin-actions";
@@ -205,5 +125,9 @@ public class LoginController {
     public void exit(HttpSession session) {
         session.invalidate();
         System.exit(0);
+    }
+
+    private boolean isLoggedIn(HttpSession session) {
+        return session.getAttribute("loggedIn") != null;
     }
 }
