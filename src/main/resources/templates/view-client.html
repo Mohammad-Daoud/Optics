@@ -13,7 +13,20 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Include EasyZoom CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/easyzoom/2.5.0/easyzoom.css">
 
+    <!-- Include EasyZoom JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/easyzoom/2.5.0/easyzoom.js"></script>
+
+
+    <style>
+        .easyzoom img {
+            width: 100%;
+            max-width: 100%;
+            display: block;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-4">
@@ -70,7 +83,7 @@
     </div>
 </div>
 </div>
-<!-- Modal for Viewing Images with Carousel -->
+
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -79,15 +92,17 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Bootstrap Carousel for Images -->
                 <div id="carouselExampleIndicators" class="carousel slide" data-bs-interval="false">
                     <div class="carousel-inner">
                         <div th:each="imageUrl, iterStat : ${client.imageUrls}"
                              class="carousel-item" th:classappend="${iterStat.index == 0}? 'active' : ''">
-                            <img th:src="@{${imageUrl}}" class="d-block w-100" alt="Client Image">
+                            <div class="easyzoom easyzoom--overlay">
+                                <a th:href="@{${imageUrl}}" th:data-standard="@{${imageUrl}}">
+                                    <img th:src="@{${imageUrl}}" class="d-block w-100" alt="Client Image">
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    <!-- Previous and next controls -->
                     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
@@ -199,7 +214,7 @@
             </table>
 
             <!-- Edit and Delete Exam -->
-            <div class="text-center my-3">
+            <div class="text-center m-3">
                 <a th:href="@{/exams/edit(id=${exam.id})}" class="btn btn-info btn-sm">Edit</a>
                 <!-- Exam Delete Button -->
                 <a href="#" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteExamModal"
@@ -234,7 +249,7 @@
 </div>
 
 <!-- Back to Clients List and Edit/Delete Client -->
-<div class="mt-4 mb-6 text-center">
+<div class="m-4 text-center">
     <a href="/clients" class="btn btn-secondary">Back to Clients List</a>
     <a th:href="@{/clients/edit(id=${client.id})}" class="btn btn-warning">Edit Client</a>
     <!-- Client Delete Button -->
@@ -260,5 +275,14 @@
     </div>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize EasyZoom when the modal is shown
+        $('#imageModal').on('shown.bs.modal', function () {
+            const easyZooms = $('.easyzoom').easyZoom();
+        });
+    });
+</script>
 </body>
 </html>
