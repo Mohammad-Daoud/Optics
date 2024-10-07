@@ -46,6 +46,7 @@ public class ExamController {
     @GetMapping("/edit")
     public String showEditExamForm(@RequestParam("id") Long examId, Model model) {
         model.addAttribute("exam", examService.getExamById(examId));
+        model.addAttribute("client",clientService.getClientById(examService.getClientIdByExamId(examId)));
         return "edit-exam";
     }
 

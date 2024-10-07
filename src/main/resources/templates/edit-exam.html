@@ -166,11 +166,25 @@
     let errors = [];
 
     // Check Sph/Cyl/Add/CL values must be multiples of 0.25
+    const idToNameMap = {
+      odSph: "OD Sphere",
+      odCyl: "OD Cylinder",
+      odAdd: "OD Add",
+      osSph: "OS Sphere",
+      osCyl: "OS Cylinder",
+      osAdd: "OS Add",
+      contactLens: "Contact Lens",
+      odAxis: "OD Axis",
+      osAxis: "OS Axis",
+      odVa: "OD VA",
+      osVa: "OS VA",
+      ipd: "IPD"
+    };
     const valuesToCheck = ['odSph', 'odCyl', 'odAdd', 'osSph', 'osCyl', 'osAdd', 'contactLens'];
     valuesToCheck.forEach(id => {
       const value = parseFloat(document.getElementById(id).value);
       if (isNaN(value) || value % 0.25 !== 0) {
-        errors.push(`${id} must be a multiple of 0.25 (e.g., 0.25, 0.50, 0.75, etc.)`);
+        errors.push(`<strong>${idToNameMap[id]}</strong> must be a multiple of 0.25 (e.g., 0.25, 0.50, 0.75, etc.)`);
         isValid = false;
       }
     });
@@ -180,7 +194,7 @@
     axisValues.forEach(id => {
       const value = parseInt(document.getElementById(id).value);
       if (isNaN(value) || value < 0 || value > 180) {
-        errors.push(`${id} must be between 0 and 180`);
+        errors.push(`<strong>${idToNameMap[id]}</strong>  must be between 0 and 180`);
         isValid = false;
       }
     });
@@ -190,7 +204,7 @@
     rangeValues.forEach(id => {
       const value = parseInt(document.getElementById(id).value);
       if (isNaN(value) || value < 40 || value > 70) {
-        errors.push(`${id} must be between 40 and 70`);
+        errors.push(`<strong>${idToNameMap[id]}</strong>  must be between 40 and 70`);
         isValid = false;
       }
     });
