@@ -27,8 +27,7 @@ public class LoginController {
     private final FileService fileService;
     private final DatabaseService databaseService;
 
-    @Value("${admin.username}")
-    private String adminUsername;
+
 
     public LoginController(PasswordService passwordService, FileService fileService, DatabaseService databaseService) {
         this.passwordService = passwordService;
@@ -42,10 +41,9 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam("username") String username,
-                        @RequestParam("password") String password,
+    public String login(@RequestParam("password") String password,
                         HttpSession session, Model model) {
-        if (adminUsername.equals(username) && passwordService.isValidPassword(password)) {
+        if (passwordService.isValidPassword(password)) {
             session.setAttribute("loggedIn", true);
             return "redirect:/clients";
         }
