@@ -77,7 +77,9 @@
           <th>Axis</th>
           <th>Add</th>
           <th>V/A</th>
+          <th>Frame</th>
           <th>Lens</th>
+          <th></th>
         </tr>
         </thead>
         <tbody>
@@ -88,7 +90,9 @@
           <td><input type="number" id="odAxis" th:field="*{odAxis}" class="form-control form-control-sm" min="0" max="180"/></td>
           <td><input type="text" id="odAdd" th:field="*{odAdd}" class="form-control form-control-sm"/></td>
           <td><input type="number" id="odVa" th:field="*{odVa}" class="form-control form-control-sm" min="40" max="70"/></td>
+          <td><input type="text" id="odFrame" th:field="*{odFrame}" class="form-control form-control-sm" /></td>
           <td><input type="text" th:field="*{odLens}" class="form-control form-control-sm"/></td>
+          <td><input type="text" id="odExtra" th:field="*{odExtra}" class="form-control form-control-sm" /></td>
         </tr>
         <tr>
           <td>OS</td>
@@ -97,7 +101,9 @@
           <td><input type="number" id="osAxis" th:field="*{osAxis}" class="form-control form-control-sm" min="0" max="180"/></td>
           <td><input type="text" id="osAdd" th:field="*{osAdd}" class="form-control form-control-sm"/></td>
           <td><input type="number" id="osVa" th:field="*{osVa}" class="form-control form-control-sm" min="40" max="70"/></td>
+          <td><input type="text" id="osFrame" th:field="*{osFrame}" class="form-control form-control-sm" /></td>
           <td><input type="text" th:field="*{osLens}" class="form-control form-control-sm"/></td>
+          <td><input type="text" id="osExtra" th:field="*{osExtra}" class="form-control form-control-sm" /></td>
         </tr>
         </tbody>
       </table>
@@ -142,12 +148,15 @@
         <tr>
           <th>Contact Lens</th>
           <th>IPD</th>
+          <th>Note</th>
         </tr>
         </thead>
         <tbody>
         <tr>
           <td><input type="text" id="contactLens" th:field="*{contactLens}" class="form-control form-control-sm"/></td>
-          <td><input type="number" id="ipd" th:field="*{ipd}" class="form-control form-control-sm" min="40" max="70"/></td>
+          <td><input type="number" id="ipd" th:field="*{ipd}" class="form-control form-control-sm" /></td>
+          <td><input type="text" id="note" th:field="*{note}" class="form-control form-control-sm"/></td>
+
         </tr>
         </tbody>
       </table>
@@ -161,11 +170,11 @@
 </div>
 
 <script>
-  function validateEditExamForm() {
+  function validateEditExamForm()  {
     let isValid = true;
     let errors = [];
 
-    // Check Sph/Cyl/Add/CL values must be multiples of 0.25
+    // Map of IDs to custom names
     const idToNameMap = {
       odSph: "OD Sphere",
       odCyl: "OD Cylinder",
@@ -176,14 +185,16 @@
       contactLens: "Contact Lens",
       odAxis: "OD Axis",
       osAxis: "OS Axis",
-      odVa: "OD VA",
-      osVa: "OS VA",
+      odVa: "OD V/A",
+      osVa: "OS V/A",
       ipd: "IPD"
     };
-    const valuesToCheck = ['odSph', 'odCyl', 'odAdd', 'osSph', 'osCyl', 'osAdd', 'contactLens'];
+
+    // Check Sph/Cyl/Add/CL values must be multiples of 0.25
+    const valuesToCheck = ['odSph', 'odCyl', 'odAdd', 'osSph', 'osCyl', 'osAdd'];
     valuesToCheck.forEach(id => {
       const value = parseFloat(document.getElementById(id).value);
-      if (isNaN(value) || value % 0.25 !== 0) {
+      if (!isNaN(value) && value % 0.25 !== 0) {
         errors.push(`<strong>${idToNameMap[id]}</strong> must be a multiple of 0.25 (e.g., 0.25, 0.50, 0.75, etc.)`);
         isValid = false;
       }
@@ -193,21 +204,28 @@
     const axisValues = ['odAxis', 'osAxis'];
     axisValues.forEach(id => {
       const value = parseInt(document.getElementById(id).value);
-      if (isNaN(value) || value < 0 || value > 180) {
+      if (!isNaN(value) && ( value < 0 || value > 180)) {
         errors.push(`<strong>${idToNameMap[id]}</strong>  must be between 0 and 180`);
         isValid = false;
       }
     });
 
     // IPD and VA values must be between 40 and 70
-    const rangeValues = ['odVa', 'osVa', 'ipd'];
+    const rangeValues = ['odVa', 'osVa'];
     rangeValues.forEach(id => {
       const value = parseInt(document.getElementById(id).value);
-      if (isNaN(value) || value < 40 || value > 70) {
+      if (!isNaN(value) && ( value < 40 || value > 70 )) {
         errors.push(`<strong>${idToNameMap[id]}</strong>  must be between 40 and 70`);
         isValid = false;
       }
     });
+
+    const ipd = 'ipd';
+    const value = parseInt(document.getElementById(ipd).value);
+    if (!isNaN(value) && ( value < 30 || value > 80 )) {
+      errors.push(`<strong>IPD</strong>  must be between 30 and 80`);
+      isValid = false;
+    }
 
     if (!isValid) {
       const errorMessagesDiv = document.getElementById('errorMessages');

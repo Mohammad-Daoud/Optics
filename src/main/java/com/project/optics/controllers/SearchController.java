@@ -28,6 +28,7 @@ public class SearchController {
                                 Model model) {
         Page<Client> clientsPage = searchService.searchClients(query, PageRequest.of(page, size));
         model.addAttribute("clientsPage", clientsPage);
+        model.addAttribute("needToShow",true);
         model.addAttribute("query", query);
         return "clients";
     }

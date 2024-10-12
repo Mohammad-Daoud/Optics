@@ -36,8 +36,6 @@ public class SearchService {
 
             // Search based on how many names are provided
             switch (nameParts.length) {
-                case 1:
-                    return clientRepository.searchByFirstNameOrLastName(nameParts[0], pageable);
                 case 2:
                     return clientRepository.searchByFirstAndLastName(nameParts[0], nameParts[1], pageable);
                 case 3:

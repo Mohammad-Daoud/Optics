@@ -128,14 +128,16 @@
                     <thead class="thead-dark">
                     <tr>
                         <th>No.</th>
-                        <th>Date Last Exam</th>
+                        <th style="width: 150px; white-space: nowrap;">Date Last Exam</th>
                         <th>Eye</th>
                         <th>Sph</th>
                         <th>Cyl</th>
                         <th>Axis</th>
                         <th>Add</th>
                         <th>V/A</th>
+                        <th>Frame</th>
                         <th>Lens</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -148,7 +150,10 @@
                         <td th:text="${exam.odAxis}"></td>
                         <td th:text="${exam.odAdd}"></td>
                         <td th:text="${exam.odVa}"></td>
+                        <td th:text="${exam.odFrame}"></td>
                         <td th:text="${exam.odLens}"></td>
+                        <td th:text="${exam.odExtra}"></td>
+
                     </tr>
                     <tr>
                         <td>OS</td>
@@ -157,7 +162,9 @@
                         <td th:text="${exam.osAxis}"></td>
                         <td th:text="${exam.osAdd}"></td>
                         <td th:text="${exam.osVa}"></td>
+                        <td th:text="${exam.osFrame}"></td>
                         <td th:text="${exam.osLens}"></td>
+                        <td th:text="${exam.osExtra}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -203,12 +210,15 @@
                 <tr>
                     <th>Contact Lens</th>
                     <th>IPD</th>
+                    <th>Note</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td th:text="${exam.contactLens}"></td>
                     <td th:text="${exam.ipd}"></td>
+                    <td th:text="${exam.note}"></td>
+
                 </tr>
                 </tbody>
             </table>

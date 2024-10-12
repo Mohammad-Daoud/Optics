@@ -26,6 +26,8 @@ public class Exam {
     private String odAdd;
     private String odLens;
     private String odVa;
+    private String odFrame;
+    private String odExtra;
 
     private String osSph;
     private String osCyl;
@@ -33,10 +35,13 @@ public class Exam {
     private String osAdd;
     private String osLens;
     private String osVa;
+    private String osFrame;
+    private String osExtra;
 
     private String kReading;
     private String contactLens;
     private String ipd;
+    private String note;
 
     public void updateExamDetails(Exam updatedExam) {
         this.odSph = updatedExam.getOdSph();
@@ -45,6 +50,8 @@ public class Exam {
         this.odAdd = updatedExam.getOdAdd();
         this.odLens = updatedExam.getOdLens();
         this.odVa = updatedExam.getOdVa();
+        this.odFrame = updatedExam.getOdFrame();
+        this.odExtra = updatedExam.getOdExtra();
 
         this.osSph = updatedExam.getOsSph();
         this.osCyl = updatedExam.getOsCyl();
@@ -52,34 +59,13 @@ public class Exam {
         this.osAdd = updatedExam.getOsAdd();
         this.osLens = updatedExam.getOsLens();
         this.osVa = updatedExam.getOsVa();
+        this.osFrame = updatedExam.getOsFrame();
+        this.osExtra = updatedExam.getOsExtra();
 
         this.kReading = updatedExam.getKReading();
         this.contactLens = updatedExam.getContactLens();
         this.ipd = updatedExam.getIpd();
-    }
-
-    @Override
-    public String toString() {
-        return "Exam{" +
-                "id=" + id +
-                ", client=" + client +
-                ", dateLastExam=" + dateLastExam +
-                ", odSph='" + odSph + '\'' +
-                ", odCyl='" + odCyl + '\'' +
-                ", odAxis='" + odAxis + '\'' +
-                ", odAdd='" + odAdd + '\'' +
-                ", odLens='" + odLens + '\'' +
-                ", odVa='" + odVa + '\'' +
-                ", osSph='" + osSph + '\'' +
-                ", osCyl='" + osCyl + '\'' +
-                ", osAxis='" + osAxis + '\'' +
-                ", osAdd='" + osAdd + '\'' +
-                ", osLens='" + osLens + '\'' +
-                ", osVa='" + osVa + '\'' +
-                ", kReading='" + kReading + '\'' +
-                ", contactLens='" + contactLens + '\'' +
-                ", ipd='" + ipd + '\'' +
-                '}';
+        this.note = updatedExam.getNote();
     }
 }
 
