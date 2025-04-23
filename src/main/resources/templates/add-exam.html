@@ -229,14 +229,19 @@
     }
 
 
-    function saveKReading() {
-        const kReadingDetails = document.getElementById('kReadingTextarea').value;
-        document.getElementById('kReading').value = kReadingDetails;
+function saveKReading() {
+    const kReadingDetails = document.getElementById('kReadingTextarea').value;
+    const kReadingInput = document.querySelector('input[name="kReading"]');
+    if (kReadingInput) {
+        kReadingInput.value = kReadingDetails;
+    }
 
-        // Close the modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('kReadingModal'));
+    // Close the modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('kReadingModal'));
+    if (modal) {
         modal.hide();
     }
+}
 </script>
 
 </body>

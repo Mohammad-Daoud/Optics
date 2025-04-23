@@ -43,8 +43,8 @@ public class NetworkUtil {
         return "http://" + localIP + ":" + port;
     }
 
-    public static void openBrowser(ApplicationContext context) {
-       String url = getUrl(context);
+    public static void openBrowser(String url) {
+
         String os = System.getProperty("os.name").toLowerCase();
 
         try {

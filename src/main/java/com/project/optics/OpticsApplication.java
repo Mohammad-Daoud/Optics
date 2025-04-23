@@ -2,9 +2,11 @@ package com.project.optics;
 
 import com.project.optics.utils.NetworkUtil;
 import com.project.optics.utils.SwaggerUtils;
+import com.project.optics.utils.SwingUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
 import javax.swing.*;
@@ -16,8 +18,10 @@ import java.net.URL;
 public class OpticsApplication {
 
 	public static void main(String[] args) {
-		ApplicationContext context = SpringApplication.run(OpticsApplication.class, args);
-		NetworkUtil.openBrowser(context);
-		SwaggerUtils.openUIWindow(context);
+		SwingUtils.showLoadingMessage();
+		ConfigurableApplicationContext context = SpringApplication.run(OpticsApplication.class, args);
+		NetworkUtil.openBrowser(NetworkUtil.getUrl(context));
+		SwingUtils.openUIWindow(context);
+		SwingUtils.closeLoadingMessage();
 	}
 }
