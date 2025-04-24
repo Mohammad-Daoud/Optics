@@ -3,6 +3,7 @@
 <head>
   <title>Edit Client</title>
   <th:block th:include="header :: header"></th:block>
+<script th:src="@{/js.js}"></script>
   <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
   <script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
   <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
@@ -142,11 +143,12 @@
     const lastName = document.getElementById("lastName").value;
 
     // Check if any of the names contain spaces
+    /*
     const errorMessage = checkSpacesInNames(firstName, secondName, thirdName, lastName);
-    if (errorMessage !== null) {
+  if (errorMessage !== null) {
       showErrorMessage(`Input value "${errorMessage}" should not contain spaces.`);
       return;
-    }
+    }*/
 
     const originalFirstName = document.getElementById("originalFirstName").value;
     const originalSecondName = document.getElementById("originalSecondName").value;

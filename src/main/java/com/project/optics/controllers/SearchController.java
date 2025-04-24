@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/search")
 public class SearchController {
@@ -32,4 +34,11 @@ public class SearchController {
         model.addAttribute("query", query);
         return "clients";
     }
+
+    @GetMapping("/api/search")
+    @ResponseBody
+    public List<Client> searchClients(@RequestParam("query") String query) {
+        return searchService.searchClients(query, null).getContent();
+    }
+
 }

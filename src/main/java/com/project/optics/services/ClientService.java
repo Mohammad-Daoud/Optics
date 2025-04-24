@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.project.optics.models.Client;
 import com.project.optics.repositories.ClientRepository;
-import org.thymeleaf.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,10 +35,39 @@ public class ClientService {
 
         return !similarClients.isEmpty();
     }
+
     public void addClient(Client client) {
+        removeSpacesFromClient(client);
+        populateSearchName(client);
         client.setDateOfCreation(LocalDate.now());
         clientRepository.save(client);
     }
+
+    private void removeSpacesFromClient(Client client) {
+        client.setFirstName(client.getFirstName() != null ? client.getFirstName().replaceAll("\\s+", " ").trim() : null);
+        client.setSecondName(client.getSecondName() != null ? client.getSecondName().replaceAll("\\s+", " ").trim() : null);
+        client.setThirdName(client.getThirdName() != null ? client.getThirdName().replaceAll("\\s+", " ").trim() : null);
+        client.setLastName(client.getLastName() != null ? client.getLastName().replaceAll("\\s+", " ").trim() : null);
+    }
+    private void populateSearchName(Client client) {
+        StringBuilder searchNameBuilder = new StringBuilder();
+
+        if (client.getFirstName() != null) {
+            searchNameBuilder.append(client.getFirstName().replaceAll("\\s+", " ").trim()).append(" ");
+        }
+        if (client.getSecondName() != null) {
+            searchNameBuilder.append(client.getSecondName().replaceAll("\\s+", " ").trim()).append(" ");
+        }
+        if (client.getThirdName() != null) {
+            searchNameBuilder.append(client.getThirdName().replaceAll("\\s+", " ").trim()).append(" ");
+        }
+        if (client.getLastName() != null) {
+            searchNameBuilder.append(client.getLastName().replaceAll("\\s+", " ").trim());
+        }
+
+        client.setSearchName(searchNameBuilder.toString().replaceAll("\\s+", " ").replaceAll("\\s+", " ").toLowerCase());
+    }
+
 
     public Client getClientById(Long id) {
         return clientRepository.findById(id).orElse(null);
@@ -51,6 +79,8 @@ public class ClientService {
 
     public void updateClient(Client client) {
         // Find the existing client and update its details
+        removeSpacesFromClient(client);
+        populateSearchName(client);
         Client existingClient = clientRepository.findById(client.getId())
                 .orElseThrow(() -> new RuntimeException("Client not found"));
 
@@ -68,12 +98,12 @@ public class ClientService {
     }
 
 
-    public String nameContainsSpaces(String ... names) {
-        for (String name : names) {
+    public String nameContainsSpaces(String... names) {
+      /*  for (String name : names) {
             if (name != null && name.contains(" ")) {
                 return name;
             }
-        }
+        }*/
         return null;
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 public class SearchService {
@@ -23,19 +22,17 @@ public class SearchService {
 
         if (isNumeric(query)) {
             // Check if the query is numeric, and based on the length, determine if it's an ID or phone number
-            if (query.length() == 10 || query.length() == 11) {
-                // Assuming phone number is 10 or 11 digits long
-                return clientRepository.searchByPhoneNumber(query, pageable);
-            } else {
-                // Otherwise, assume it's an ID
+            Page<Client> phoneNumberResult = clientRepository.searchByPhoneNumber(query, pageable);
+            if (phoneNumberResult.isEmpty()) {
                 return clientRepository.searchById(Long.valueOf(query), pageable);
             }
+            return phoneNumberResult;
         } else {
             // Split the input into words (names)
-            String[] nameParts = query.split("\\s+");
-
+            query = query.replaceAll("\\s+", " ");
             // Search based on how many names are provided
-            switch (nameParts.length) {
+            return clientRepository.searchBySearchName(query, pageable);
+            /* switch (nameParts.length) {
                 case 2:
                     return clientRepository.searchByFirstAndLastName(nameParts[0], nameParts[1], pageable);
                 case 3:
@@ -44,7 +41,7 @@ public class SearchService {
                     return clientRepository.searchByFullName(nameParts[0], nameParts[1], nameParts[2], nameParts[3], pageable);
                 default:
                     return clientRepository.defaultSearch(query,pageable); // Default case if query doesn't match criteria
-            }
+            }*/
         }
     }
 

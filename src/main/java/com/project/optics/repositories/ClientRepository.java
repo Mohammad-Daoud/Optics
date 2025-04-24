@@ -56,4 +56,7 @@ public interface ClientRepository extends JpaRepository<Client,Long> {
                                     @Param("secondName") String secondName,
                                     @Param("thirdName") String thirdName,
                                     @Param("lastName") String lastName);
+
+    @Query("SELECT c FROM Client c WHERE LOWER(c.searchName) LIKE LOWER(CONCAT('%', :searchName, '%'))")
+    Page<Client> searchBySearchName(@Param("searchName") String searchName, Pageable pageable);
 }

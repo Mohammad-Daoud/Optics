@@ -35,6 +35,8 @@ public class Client {
     private int age;
     private String occupation;
 
+    private String searchName;
+
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<Exam> exams = new ArrayList<>();
 
