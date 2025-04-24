@@ -79,11 +79,11 @@ public class ClientService {
 
     public void updateClient(Client client) {
         // Find the existing client and update its details
-        removeSpacesFromClient(client);
-        populateSearchName(client);
+
         Client existingClient = clientRepository.findById(client.getId())
                 .orElseThrow(() -> new RuntimeException("Client not found"));
 
+        removeSpacesFromClient(client);
         existingClient.setFirstName(client.getFirstName());
         existingClient.setSecondName(client.getSecondName());
         existingClient.setThirdName(client.getThirdName());
@@ -94,6 +94,7 @@ public class ClientService {
         existingClient.setAge(client.getAge());
         existingClient.setOccupation(client.getOccupation());
         existingClient.setImageUrls(client.getImageUrls());
+        populateSearchName(existingClient);
         clientRepository.save(existingClient);
     }
 
