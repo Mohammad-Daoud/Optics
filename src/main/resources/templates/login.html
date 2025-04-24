@@ -19,10 +19,10 @@
                 <div class="form-group mb-3">
                     <button type="submit" class="btn btn-primary w-100">Login</button>
                 </div>
-                <div th:if="${param.error}" class="alert alert-danger">
-                    Invalid username or password.
+                <div th:if="${error}" class="alert alert-danger">
+                    Invalid password.
                 </div>
-                <div th:if="${param.logout}" class="alert alert-success">
+                <div th:if="${param.logout}" class="alert alert-warning">
                     You have been logged out.
                 </div>
             </form>

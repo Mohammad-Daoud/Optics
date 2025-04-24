@@ -47,7 +47,7 @@ public class LoginController {
             session.setAttribute("loggedIn", true);
             return "redirect:/clients";
         }
-        model.addAttribute("error", "Invalid credentials");
+        model.addAttribute("error", "true");
         return "login";
     }
 
